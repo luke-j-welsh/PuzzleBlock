@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.Random;
@@ -34,5 +36,23 @@ public class DisplayPuzzle extends AppCompatActivity {
         String puzzleBody = resultSet.getString(3);
         String puzzleAns = resultSet.getString(4);
         userPuzzle = new Puzzle(puzzleId,puzzleName,puzzleType,puzzleBody,puzzleAns);
+    }
+
+
+    public void submitAnswer(View view) {
+        TextView textView = findViewById(R.id.textView2);
+        EditText answerInput = findViewById(R.id.userAnswer);
+        String answer = answerInput.getText().toString();
+
+
+        if(answer.equals(userPuzzle.getPuzzleAns()))
+        {
+            textView.setText("Correct!");
+            this.moveTaskToBack(true);
+            finish();
+        }else
+        {
+            textView.setText("Incorrect!");
+        }
     }
 }
