@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
-        databaseTest();
 
 
     }
@@ -48,17 +47,6 @@ public class MainActivity extends AppCompatActivity {
     public void sendMessage(View view) {
         Intent intent = new Intent(this, DisplayPuzzle.class);
         startActivity(intent);
-    }
-
-
-    public void databaseTest(){
-
-        SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
-        Cursor resultSet = mydatabase.rawQuery("Select * from Puzzles",null);
-        resultSet.moveToFirst();
-        String puzzlenm = resultSet.getString(1);
-        String body = resultSet.getString(3);
-        System.out.println("Hiiii " + puzzlenm + " " + body);
     }
 
     public void createDatabase()

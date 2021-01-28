@@ -5,4 +5,5 @@
     <string name="title_notifications">Notifications</string>
     <string name="answer_message">Answer...</string>
     <string name="button_answer">Submit</string>
+    <string name="PuzzleBody">PuzzleBody</string>
 </resources>
