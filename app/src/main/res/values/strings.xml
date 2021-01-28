@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">PuzzleBlock1</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="answer_message">Answer...</string>
+    <string name="button_answer">Submit</string>
+</resources>
