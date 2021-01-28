@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
         Cursor resultSet = mydatabase.rawQuery("Select * from Puzzles",null);
         resultSet.moveToFirst();
-        resultSet.moveToNext();
         String puzzlenm = resultSet.getString(1);
         String body = resultSet.getString(3);
         System.out.println("Hiiii " + puzzlenm + " " + body);
