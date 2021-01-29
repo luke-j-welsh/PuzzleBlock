@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.BaseColumns;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -40,8 +42,26 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+        TextView textView1 = findViewById(R.id.textView3);
+        Intent intent1 = new Intent(this, DisplayPuzzle.class);
+        startPuzzle(10000,textView1, intent1);
 
+    }
 
+    public void startPuzzle(int time, final TextView timerDisp, final Intent onFinish)
+    {
+
+        new CountDownTimer(time, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                timerDisp.setText("seconds remaining: " + millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+                timerDisp.setText("done!");
+                startActivity(onFinish);
+            }
+        }.start();
     }
 
     public void sendMessage(View view) {
