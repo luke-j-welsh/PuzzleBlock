@@ -28,8 +28,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String CHANNEL_ID = "Puzzle" ;
 
+
+    private static final String CHANNEL_ID = "Puzzle" ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,80 +45,17 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
-        TextView textView1 = findViewById(R.id.textView3);
-        Intent intent1 = new Intent(this, DisplayPuzzle.class);
-        createNotificationChannel();
-        startPuzzle(10000,textView1, intent1);
 
+        createNotificationChannel();
 //        background();
     }
 
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
 
 
 
-    public void background(){
-        Intent fullScreenIntent = new Intent(this, DisplayPuzzle.class);
-        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
-                fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_home_black_24dp)
-                        .setContentTitle("Puzzle Time")
-                        .setContentText("Time to Complete a Puzzle")
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setCategory(NotificationCompat.CATEGORY_ALARM)
-                        .setFullScreenIntent(fullScreenPendingIntent, true)
-                        .setAutoCancel(true);
-
-        Notification incomingCallNotification = notificationBuilder.build();
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-
-// notificationId is a unique int for each notification that you must define
-        int notificationId = 1;
-        System.out.println("Thiissss");
-        notificationManager.notify(notificationId, incomingCallNotification);
-
-    }
 
 
 
-    public void startPuzzle(int time, final TextView timerDisp, final Intent onFinish)
-    {
-
-        new CountDownTimer(time, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-                timerDisp.setText("seconds remaining: " + millisUntilFinished / 1000);
-            }
-
-            public void onFinish() {
-                timerDisp.setText("done!");
-                background();
-            }
-        }.start();
-    }
-
-    public void sendMessage(View view) {
-        Intent intent = new Intent(this, DisplayPuzzle.class);
-        startActivity(intent);
-    }
 
     public void createDatabase()
     {
@@ -144,4 +82,25 @@ public class MainActivity extends AppCompatActivity {
             //handle
         }
     }
+
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+
+
+
 }
