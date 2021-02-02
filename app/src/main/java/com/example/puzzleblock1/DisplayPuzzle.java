@@ -47,13 +47,8 @@ public class DisplayPuzzle extends AppCompatActivity {
     }
 
     public void reopen() {
-        System.out.println("HII Thereee");
-
         Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // You need this if starting
-        //  the activity from a service
-        intent.setAction(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 
@@ -63,21 +58,9 @@ public class DisplayPuzzle extends AppCompatActivity {
         if(answer.equals(userPuzzle.getPuzzleAns()))
         {
             userComm.setText("Correct!");
-            this.moveTaskToBack(true);
             answerInput.setText(null);
-            new CountDownTimer(10000, 1000) {
-
-                public void onTick(long millisUntilFinished) {
-                    userComm.setText("seconds remaining: " + millisUntilFinished / 1000);
-                }
-
-                public void onFinish() {
-                    userComm.setText("done!");
-                    finish();
-                    reopen();
-//                    getPuzzle();
-                }
-            }.start();
+            reopen();
+            finish();
         }else
         {
             userComm.setText("Incorrect!");

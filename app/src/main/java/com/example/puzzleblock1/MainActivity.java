@@ -1,18 +1,21 @@
 package com.example.puzzleblock1;
 
-import android.content.ContentValues;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.provider.BaseColumns;
 import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -25,8 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String EXTRA_MESSAGE = "com.example.PuzzleBlock1.MESSAGE";
-
+    private static final String CHANNEL_ID = "Puzzle" ;
 
 
     @Override
@@ -44,9 +46,57 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
         TextView textView1 = findViewById(R.id.textView3);
         Intent intent1 = new Intent(this, DisplayPuzzle.class);
+        createNotificationChannel();
         startPuzzle(10000,textView1, intent1);
 
+//        background();
     }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+
+
+    public void background(){
+        Intent fullScreenIntent = new Intent(this, DisplayPuzzle.class);
+        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
+                fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_home_black_24dp)
+                        .setContentTitle("Puzzle Time")
+                        .setContentText("Time to Complete a Puzzle")
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setCategory(NotificationCompat.CATEGORY_ALARM)
+                        .setFullScreenIntent(fullScreenPendingIntent, true)
+                        .setAutoCancel(true);
+
+        Notification incomingCallNotification = notificationBuilder.build();
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+// notificationId is a unique int for each notification that you must define
+        int notificationId = 1;
+        System.out.println("Thiissss");
+        notificationManager.notify(notificationId, incomingCallNotification);
+
+    }
+
+
 
     public void startPuzzle(int time, final TextView timerDisp, final Intent onFinish)
     {
@@ -59,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
             public void onFinish() {
                 timerDisp.setText("done!");
-                startActivity(onFinish);
+                background();
             }
         }.start();
     }
