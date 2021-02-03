@@ -24,7 +24,6 @@ import com.example.puzzleblock1.DisplayPuzzle;
 import com.example.puzzleblock1.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import static java.lang.Integer.parseInt;
 
 public class HomeFragment extends Fragment {
 
@@ -33,10 +32,6 @@ public class HomeFragment extends Fragment {
     public String appTimeStr = "10";
     public TextView time;
     private static final String CHANNEL_ID = "Puzzle" ;
-
-
-
-
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
