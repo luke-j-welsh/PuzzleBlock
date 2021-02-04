@@ -8,4 +8,5 @@
     <string name="PuzzleBody">PuzzleBody</string>
     <string name="channel_name">Puzzle Notification</string>
     <string name="channel_description">Notification for puzzles</string>
+    <string name="overlay_text">You must complete a puzzle to continue</string>
 </resources>

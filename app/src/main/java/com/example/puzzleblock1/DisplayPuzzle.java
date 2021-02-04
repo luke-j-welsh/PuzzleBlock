@@ -9,8 +9,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Random;
 
@@ -25,6 +28,9 @@ public class DisplayPuzzle extends AppCompatActivity {
         answerInput = findViewById(R.id.userAnswer);
         userComm = findViewById(R.id.textView2);
         getPuzzle();
+
+
+
     }
 
     public void getPuzzle(){

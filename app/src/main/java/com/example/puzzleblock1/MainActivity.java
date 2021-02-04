@@ -12,11 +12,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.Settings;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -44,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static final String CHANNEL_ID = "Puzzle" ;
-
+    private static final int APP_PERMISSION_REQUEST = 1 ;
 
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -65,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             startActivity(intent);
         }
+        createDatabase();
         createNotificationChannel();
 //
 //        Calendar beginCal = Calendar.getInstance();
@@ -79,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent backgroundCheckService = new Intent(this, BackgroundService.class);
 
-        startForegroundService(backgroundCheckService);
+
 
 //        Timer backTimer = new Timer();
 //        TimerTask backgroundChecker = new TimerTask() {
@@ -110,6 +115,18 @@ public class MainActivity extends AppCompatActivity {
 //        }
 
 //        background();
+
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, APP_PERMISSION_REQUEST);
+        }
+        else
+        {
+            startForegroundService(backgroundCheckService);
+        }
     }
 
 
@@ -135,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
+
 
 
 
@@ -183,6 +201,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void overlay(){
+
+    }
 
 
 
