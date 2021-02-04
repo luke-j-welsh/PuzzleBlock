@@ -52,11 +52,7 @@ public class DisplayPuzzle extends AppCompatActivity {
         textView.setText(body);
     }
 
-    public void reopen() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-    }
+
 
 
     public void submitAnswer(View view) {
@@ -65,11 +61,26 @@ public class DisplayPuzzle extends AppCompatActivity {
         {
             userComm.setText("Correct!");
             answerInput.setText(null);
-            reopen();
+            setBreak();
             finish();
         }else
         {
             userComm.setText("Incorrect!");
         }
     }
+
+    public void setBreak()
+    {
+        SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
+        Cursor resultSet = mydatabase.rawQuery("UPDATE User SET Break = '1' WHERE userId=1",null);
+
+        resultSet.moveToFirst();
+//        c.close();
+        mydatabase.close();
+//        resultSet.moveToFirst();
+//        String breaker = resultSet.getString(4);
+//        return breaker;
+    }
+
+
 }

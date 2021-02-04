@@ -12,6 +12,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Build;
@@ -43,6 +45,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static androidx.core.content.ContextCompat.startForegroundService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -82,8 +86,6 @@ public class MainActivity extends AppCompatActivity {
 //        endCal.set(Calendar.MONTH, 1);
 //        endCal.set(Calendar.YEAR, 2021);
 
-        Intent backgroundCheckService = new Intent(this, BackgroundService.class);
-
 
 
 //        Timer backTimer = new Timer();
@@ -118,15 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, APP_PERMISSION_REQUEST);
-        }
-        else
-        {
-            startForegroundService(backgroundCheckService);
-        }
+
     }
 
 
@@ -152,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
+
 
 
 

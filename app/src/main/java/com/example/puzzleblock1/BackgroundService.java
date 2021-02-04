@@ -38,7 +38,6 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 public class BackgroundService extends Service {
     private Looper serviceLooper;
     private ServiceHandler serviceHandler;
-
     private static final String CHANNEL_ID = "Puzzle" ;
     public View mOverlayView;
 
@@ -47,17 +46,11 @@ public class BackgroundService extends Service {
         public ServiceHandler(Looper looper) {
             super(looper);
         }
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void handleMessage(Message msg) {
-            Timer backTimer = new Timer();
-            TimerTask backgroundChecker = new TimerTask() {
-                @RequiresApi(api = Build.VERSION_CODES.O)
-                @Override
-                public void run() {
-                    backgroundCheck();
-                }
-            };
-            backTimer.schedule(backgroundChecker,0, 10000 );
+            backgroundCheck();
+            stopSelf(msg.arg1);
             // Stop the service using the startId, so that we don't stop
             // the service in the middle of handling another job
         }
@@ -72,10 +65,10 @@ public class BackgroundService extends Service {
         // main thread, which we don't want to block. We also make it
         // background priority so CPU-intensive work doesn't disrupt our UI.
         super.onCreate();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            startMyOwnForeground();
-        else
-            startForeground(1, new Notification());
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+//            startMyOwnForeground();
+//        else
+//            startForeground(1, new Notification());
     HandlerThread thread = new HandlerThread("ServiceStartArguments",
                 Process.THREAD_PRIORITY_BACKGROUND);
         thread.start();
@@ -112,16 +105,24 @@ public class BackgroundService extends Service {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
-        // For each start request, send a message to start a job and deliver the
-        // start ID so we know which request we're stopping when we finish the job
-        Message msg = serviceHandler.obtainMessage();
-        msg.arg1 = startId;
-        serviceHandler.sendMessage(msg);
 
 
-        // If we get killed, after returning from here, restart
+        if (intent.getAction().equals("Start")) {
+//            Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
+            // For each start request, send a message to start a job and deliver the
+            // start ID so we know which request we're stopping when we finish the job
+            Message msg = serviceHandler.obtainMessage();
+            msg.arg1 = startId;
+            serviceHandler.sendMessage(msg);
+        }
+        else if (intent.getAction().equals("Stop")) {
+            //your end servce code
+            stopForeground(true);
+            stopSelfResult(startId);
+        }
         return START_STICKY;
+
+
     }
 
     @Override
@@ -134,7 +135,7 @@ public class BackgroundService extends Service {
     public void backgroundCheck()
     {
         long end = System.currentTimeMillis();
-        long start = end - 10000;
+        long start = end - 5000;
         UsageStatsManager usageStatsManager = (UsageStatsManager) this.getSystemService(Context.USAGE_STATS_SERVICE);
         UsageEvents events = usageStatsManager.queryEvents(start, end);
 //        System.out.println("This one: " + usageStatsManager.isAppInactive("com.google.android.youtube"));
@@ -165,8 +166,8 @@ public class BackgroundService extends Service {
                 {
                     mOverlayView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.overlay_display, null);
                     final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                            WindowManager.LayoutParams.WRAP_CONTENT,
-                            WindowManager.LayoutParams.WRAP_CONTENT,
+//                            WindowManager.LayoutParams.WRAP_CONTENT,
+//                            WindowManager.LayoutParams.WRAP_CONTENT,
                             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                             PixelFormat.TRANSLUCENT);
@@ -180,6 +181,10 @@ public class BackgroundService extends Service {
                             Intent puzzleStart = new Intent(getApplicationContext(), DisplayPuzzle.class);
                             puzzleStart.addFlags(FLAG_ACTIVITY_NEW_TASK);
                             startActivity(puzzleStart);
+                            Intent intent = new Intent("puzzleComplete");
+                            intent.putExtra("key","True");
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            sendBroadcast(intent);
                             mOverlayView.setVisibility(View.GONE);
                         }
                     });
@@ -200,6 +205,6 @@ public class BackgroundService extends Service {
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
     }
 }
