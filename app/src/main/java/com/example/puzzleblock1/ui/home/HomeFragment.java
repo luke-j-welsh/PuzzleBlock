@@ -37,6 +37,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.puzzleblock1.BackgroundService;
 import com.example.puzzleblock1.DisplayPuzzle;
 import com.example.puzzleblock1.R;
+import com.example.puzzleblock1.UserCreation;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Timer;
@@ -59,7 +60,8 @@ public class HomeFragment extends Fragment {
     private static final String CHANNEL_ID = "Puzzle" ;
     public Timer backTimer = new Timer();
     public Intent backgroundCheckService;
-
+    public int breakTimeInt;
+    public String breakStr;
 
 
 
@@ -69,7 +71,7 @@ public class HomeFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
 
 
-
+        checkUserInit();
         final FloatingActionButton buttonUp = v.findViewById(R.id.upButton);
         final FloatingActionButton buttonDown = v.findViewById(R.id.downButton);
         final FloatingActionButton buttonStart = v.findViewById(R.id.startButton);
@@ -108,6 +110,7 @@ public class HomeFragment extends Fragment {
                 buttonUp.setVisibility(View.GONE);
                 buttonDown.setVisibility(View.GONE);
                 buttonStart.setVisibility(View.GONE);
+
                 startTimer(appTime, time);
             }
         });
@@ -116,6 +119,58 @@ public class HomeFragment extends Fragment {
 
         return v;
     }
+
+    public void checkUserInit() {
+        SQLiteDatabase mydatabase = getActivity().openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
+        Cursor resultSet = mydatabase.rawQuery("Select * from User WHERE userId=1",null);
+        if(resultSet.getCount() == 0)
+        {
+            Intent newUser = new Intent(getContext(), UserCreation.class);
+            startActivity(newUser);
+        } else if (resultSet.getCount() == 1)
+        {
+            resultSet.moveToFirst();
+            breakStr = resultSet.getString(5);
+            breakTimeInt = Integer.parseInt(breakStr);
+
+            String breakChecker = resultSet.getString(4);
+            int breakCheckerInt = Integer.parseInt(breakChecker);
+
+            if(breakCheckerInt == 1)
+            {
+                Cursor resultSet2 = mydatabase.rawQuery("UPDATE User SET Break = '0' WHERE userId=1",null);
+                resultSet2.moveToFirst();
+            }
+
+            System.out.println("This one " + breakStr);
+        }
+        mydatabase.close();
+    }
+
+    public void checkUser() {
+        SQLiteDatabase mydatabase = getActivity().openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
+        Cursor resultSet = mydatabase.rawQuery("Select * from User WHERE userId=1",null);
+        if(resultSet.getCount() == 0)
+        {
+            Intent newUser = new Intent(getContext(), UserCreation.class);
+            startActivity(newUser);
+        } else if (resultSet.getCount() == 1)
+        {
+            resultSet.moveToFirst();
+            breakStr = resultSet.getString(5);
+            breakTimeInt = Integer.parseInt(breakStr);
+            System.out.println("This one " + breakStr);
+        }
+        mydatabase.close();
+    }
+
+
+
+
+
+
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void startTimer(int time, final TextView timerDisp)
@@ -220,12 +275,11 @@ public class HomeFragment extends Fragment {
 
     public void getBreak()
     {
+        checkUser();
         SQLiteDatabase mydatabase = getActivity().openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
         Cursor resultSet = mydatabase.rawQuery("Select * from User WHERE userId=1",null);
         resultSet.moveToFirst();
         String breaker = resultSet.getString(4);
-        String breakStr = resultSet.getString(5);
-        final int breakTimeInt = Integer.parseInt(breakStr);
         mydatabase.close();
         int breakTime = breakTimeInt * 60000;
         if(breaker.equals("1"))

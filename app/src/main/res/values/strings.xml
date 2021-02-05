@@ -9,4 +9,12 @@
     <string name="channel_name">Puzzle Notification</string>
     <string name="channel_description">Notification for puzzles</string>
     <string name="overlay_text">You must complete a puzzle to continue</string>
+    <string name="Category1">Maths</string>
+    <string name="Category1Body">A Variety of Maths Puzzles to Challenge Yourself</string>
+    <string name="Category2">Words</string>
+    <string name="Category2Body">Puzzles to Improve Your English Skills</string>
+    <string name="Category3">Pictures</string>
+    <string name="Category3Body">Puzzles to Improve your Problem Solving Skills</string>
+    <string name="BreakBody">The Length of Your Break After Completing a Puzzle, Before You Are Blocked Again</string>
+    <string name="BreakTitle">Break Time</string>
 </resources>

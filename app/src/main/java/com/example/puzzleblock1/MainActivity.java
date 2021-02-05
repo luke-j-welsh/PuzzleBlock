@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             startActivity(intent);
         }
+
+
         createDatabase();
         createNotificationChannel();
 //
@@ -155,28 +157,40 @@ public class MainActivity extends AppCompatActivity {
 
     public void createDatabase()
     {
-        String appDataPath = this.getApplicationInfo().dataDir;
+        File dbfile = new File(this.getDatabasePath("PuzzleDatabase.db").getPath());
+        System.out.println("Hi we in here!");
 
-        File dbFolder = new File(appDataPath + "/databases");//Make sure the /databases folder exists
-        dbFolder.mkdir();//This can be called multiple times.
+        if (!dbfile.exists())
+        {
+            System.out.println("Doesnt existtt");
+            String appDataPath = this.getApplicationInfo().dataDir;
 
-        File dbFilePath = new File(appDataPath + "/databases/PuzzleDatabase.db");
+            File dbFolder = new File(appDataPath + "/databases");//Make sure the /databases folder exists
+            dbFolder.mkdir();//This can be called multiple times.
 
-        try {
-            InputStream inputStream = this.getAssets().open("PuzzleDatabase.db");
-            OutputStream outputStream = new FileOutputStream(dbFilePath);
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = inputStream.read(buffer))>0)
-            {
-                outputStream.write(buffer, 0, length);
+            File dbFilePath = new File(appDataPath + "/databases/PuzzleDatabase.db");
+
+            try {
+                InputStream inputStream = this.getAssets().open("PuzzleDatabase.db");
+                OutputStream outputStream = new FileOutputStream(dbFilePath);
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = inputStream.read(buffer))>0)
+                {
+                    outputStream.write(buffer, 0, length);
+                }
+                outputStream.flush();
+                outputStream.close();
+                inputStream.close();
+            } catch (IOException e){
+                //handle
             }
-            outputStream.flush();
-            outputStream.close();
-            inputStream.close();
-        } catch (IOException e){
-            //handle
+        }else
+        {
+            System.out.println("DB Does Exist!");
         }
+
+
     }
 
 

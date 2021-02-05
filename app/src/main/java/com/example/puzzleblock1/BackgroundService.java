@@ -40,6 +40,7 @@ public class BackgroundService extends Service {
     private ServiceHandler serviceHandler;
     private static final String CHANNEL_ID = "Puzzle" ;
     public View mOverlayView;
+    public boolean puzzleOngoing = false;
 
     // Handler that receives messages from the thread
     private final class ServiceHandler extends Handler {
@@ -135,7 +136,7 @@ public class BackgroundService extends Service {
     public void backgroundCheck()
     {
         long end = System.currentTimeMillis();
-        long start = end - 5000;
+        long start = end - 2000;
         UsageStatsManager usageStatsManager = (UsageStatsManager) this.getSystemService(Context.USAGE_STATS_SERVICE);
         UsageEvents events = usageStatsManager.queryEvents(start, end);
 //        System.out.println("This one: " + usageStatsManager.isAppInactive("com.google.android.youtube"));
@@ -162,7 +163,7 @@ public class BackgroundService extends Service {
         Runnable runner = new Runnable() {
             @Override
             public void run() {
-                if(mOverlayView == null)
+                if(mOverlayView == null )
                 {
                     mOverlayView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.overlay_display, null);
                     final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
@@ -186,10 +187,11 @@ public class BackgroundService extends Service {
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             sendBroadcast(intent);
                             mOverlayView.setVisibility(View.GONE);
+                            puzzleOngoing = true;
                         }
                     });
                 }
-                else if(mOverlayView.getVisibility() == View.GONE)
+                else if(mOverlayView.getVisibility() == View.GONE )
                 {
                     mOverlayView.setVisibility(View.VISIBLE);
 

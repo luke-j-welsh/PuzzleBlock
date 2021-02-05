@@ -7,14 +7,13 @@
     tools:context=".ui.dashboard.DashboardFragment">
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/userUpdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="121dp"
-        android:layout_marginLeft="121dp"
-        android:layout_marginTop="166dp"
-        android:onClick="sendMessage"
-        android:text="Button"
+        android:layout_marginStart="128dp"
+        android:layout_marginLeft="128dp"
+        android:layout_marginTop="160dp"
+        android:text="Update User Data"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

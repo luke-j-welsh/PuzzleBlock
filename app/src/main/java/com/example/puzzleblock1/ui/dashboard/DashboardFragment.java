@@ -6,6 +6,7 @@ import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,8 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.puzzleblock1.DisplayPuzzle;
 import com.example.puzzleblock1.R;
+import com.example.puzzleblock1.UserCreation;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class DashboardFragment extends Fragment {
 
@@ -35,28 +38,18 @@ public class DashboardFragment extends Fragment {
             }
         });
 
+        final Button userButton = root.findViewById(R.id.userUpdate);
+
+
+        userButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent updateUser = new Intent(getActivity(), UserCreation.class);
+                startActivity(updateUser);
+            }
+        });
         return root;
     }
 
 
-    public void sendMessage(View view) {
-        Intent intent = new Intent(getActivity(), DisplayPuzzle.class);
-        startActivity(intent);
-    }
-
-//    public void startPuzzle(int time, final TextView timerDisp, final Intent onFinish)
-//    {
-//
-//        new CountDownTimer(time, 1000) {
-//
-//            public void onTick(long millisUntilFinished) {
-//                timerDisp.setText("seconds remaining: " + millisUntilFinished / 1000);
-//            }
-//
-//            public void onFinish() {
-//                timerDisp.setText("done!");
-//                onFinish();
-//            }
-//        }.start();
-//    }
 }
