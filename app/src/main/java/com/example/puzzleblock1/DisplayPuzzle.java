@@ -73,13 +73,8 @@ public class DisplayPuzzle extends AppCompatActivity {
     {
         SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
         Cursor resultSet = mydatabase.rawQuery("UPDATE User SET Break = '1' WHERE userId=1",null);
-
         resultSet.moveToFirst();
-//        c.close();
         mydatabase.close();
-//        resultSet.moveToFirst();
-//        String breaker = resultSet.getString(4);
-//        return breaker;
     }
 
 
