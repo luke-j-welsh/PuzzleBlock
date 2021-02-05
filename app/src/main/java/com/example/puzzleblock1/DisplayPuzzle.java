@@ -15,18 +15,27 @@ import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.w3c.dom.Text;
+
 import java.util.Random;
 
 public class DisplayPuzzle extends AppCompatActivity {
     public Puzzle userPuzzle;
     public EditText answerInput;
     public TextView userComm;
+    public TextView lives;
+    public TextView puzzleBodyV;
+    public Button submit;
+    public String livesAmount;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_puzzle);
         answerInput = findViewById(R.id.userAnswer);
         userComm = findViewById(R.id.textView2);
+        lives = findViewById(R.id.Lives);
+        puzzleBodyV = findViewById(R.id.textView);
+        submit = findViewById(R.id.button);
         getPuzzle();
 
 
@@ -48,8 +57,16 @@ public class DisplayPuzzle extends AppCompatActivity {
         String puzzleAns = resultSet.getString(4);
         userPuzzle = new Puzzle(puzzleId,puzzleName,puzzleType,puzzleBody,puzzleAns);
         String body = userPuzzle.getPuzzleBody();
-        TextView textView = findViewById(R.id.textView);
-        textView.setText(body);
+        puzzleBodyV.setText(body);
+
+        Cursor resultSet2 = mydatabase.rawQuery("Select * from User WHERE userId=1",null);
+        resultSet2.moveToFirst();
+        livesAmount = resultSet2.getString(6);
+        lives.setText(livesAmount);
+        mydatabase.close();
+
+
+
     }
 
 
@@ -66,6 +83,22 @@ public class DisplayPuzzle extends AppCompatActivity {
         }else
         {
             userComm.setText("Incorrect!");
+            SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
+            Integer livesNum = Integer.parseInt(livesAmount);
+
+            livesNum = livesNum - 1;
+            livesAmount = livesNum.toString();
+            Cursor resultSet = mydatabase.rawQuery("UPDATE User SET Lives = "+ livesAmount +" WHERE userId=1",null);
+            resultSet.moveToFirst();
+            lives.setText(livesAmount);
+            if(livesNum <= 0)
+            {
+                userComm.setVisibility(View.GONE);
+                answerInput.setVisibility(View.GONE);
+                puzzleBodyV.setVisibility(View.GONE);
+                submit.setVisibility(View.GONE);
+            }
+
         }
     }
 

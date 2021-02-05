@@ -131,6 +131,8 @@ public class HomeFragment extends Fragment {
         {
             resultSet.moveToFirst();
             breakStr = resultSet.getString(5);
+            String lives = resultSet.getString(6);
+            Integer livesInt = Integer.parseInt(lives);
             breakTimeInt = Integer.parseInt(breakStr);
 
             String breakChecker = resultSet.getString(4);
@@ -140,6 +142,11 @@ public class HomeFragment extends Fragment {
             {
                 Cursor resultSet2 = mydatabase.rawQuery("UPDATE User SET Break = '0' WHERE userId=1",null);
                 resultSet2.moveToFirst();
+            }
+            if(livesInt != 3)
+            {
+                Cursor resultSet3 = mydatabase.rawQuery("UPDATE User SET Lives = '3' WHERE userId=1",null);
+                resultSet3.moveToFirst();
             }
 
             System.out.println("This one " + breakStr);

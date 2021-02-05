@@ -10,9 +10,12 @@ import android.app.usage.UsageEvents;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -24,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Process;
 
@@ -40,7 +44,9 @@ public class BackgroundService extends Service {
     private ServiceHandler serviceHandler;
     private static final String CHANNEL_ID = "Puzzle" ;
     public View mOverlayView;
+    public View overlayFail;
     public boolean puzzleOngoing = false;
+    public int failTime;
 
     // Handler that receives messages from the thread
     private final class ServiceHandler extends Handler {
@@ -136,7 +142,7 @@ public class BackgroundService extends Service {
     public void backgroundCheck()
     {
         long end = System.currentTimeMillis();
-        long start = end - 2000;
+        long start = end - 5000;
         UsageStatsManager usageStatsManager = (UsageStatsManager) this.getSystemService(Context.USAGE_STATS_SERVICE);
         UsageEvents events = usageStatsManager.queryEvents(start, end);
 //        System.out.println("This one: " + usageStatsManager.isAppInactive("com.google.android.youtube"));
@@ -146,7 +152,8 @@ public class BackgroundService extends Service {
             events.getNextEvent(nextEvent);
             System.out.println("| This one: " + nextEvent.getPackageName() + "| Time: " + nextEvent.getTimeStamp());
 
-            if(nextEvent.getPackageName().equals("com.twitter.android"))
+            if(nextEvent.getPackageName().equals("com.twitter.android") || nextEvent.getPackageName().equals("com.snapchat.android") || nextEvent.getPackageName().equals("com.andrewshu.android.reddit")
+                    || nextEvent.getPackageName().equals("com.facebook.katana") || nextEvent.getPackageName().equals("com.facebook.orca") || nextEvent.getPackageName().equals("com.instagram.android") )
             {
                 createOverlay();
 //                Intent starter = new Intent(this, DisplayPuzzle.class);
@@ -160,48 +167,139 @@ public class BackgroundService extends Service {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void createOverlay()
     {
-        Runnable runner = new Runnable() {
-            @Override
-            public void run() {
-                if(mOverlayView == null )
-                {
-                    mOverlayView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.overlay_display, null);
-                    final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+        SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
+
+        Cursor resultSet2 = mydatabase.rawQuery("Select * from User WHERE userId=1",null);
+        resultSet2.moveToFirst();
+        String livesAmount = resultSet2.getString(6);
+        String failTimeStr = resultSet2.getString(5);
+        failTime = Integer.parseInt(failTimeStr);
+        final int breakTime = failTime * 60000;
+
+
+        int livesInt = Integer.parseInt(livesAmount);
+
+        if(livesInt > 0)
+        {
+            Runnable runner = new Runnable() {
+                @Override
+                public void run() {
+                    if(mOverlayView == null )
+                    {
+                        mOverlayView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.overlay_display, null);
+                        final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
 //                            WindowManager.LayoutParams.WRAP_CONTENT,
 //                            WindowManager.LayoutParams.WRAP_CONTENT,
-                            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                            PixelFormat.TRANSLUCENT);
-                    WindowManager mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-                    mWindowManager.addView(mOverlayView, params);
+                                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                                PixelFormat.TRANSLUCENT);
+                        WindowManager mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+                        mWindowManager.addView(mOverlayView, params);
 
-                    final Button buttonStart = mOverlayView.findViewById(R.id.button2);
-                    buttonStart.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent puzzleStart = new Intent(getApplicationContext(), DisplayPuzzle.class);
-                            puzzleStart.addFlags(FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(puzzleStart);
-                            Intent intent = new Intent("puzzleComplete");
-                            intent.putExtra("key","True");
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            sendBroadcast(intent);
-                            mOverlayView.setVisibility(View.GONE);
-                            puzzleOngoing = true;
-                        }
-                    });
+                        final Button buttonStart = mOverlayView.findViewById(R.id.button2);
+                        buttonStart.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent puzzleStart = new Intent(getApplicationContext(), DisplayPuzzle.class);
+                                puzzleStart.addFlags(FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(puzzleStart);
+                                Intent intent = new Intent("puzzleComplete");
+                                intent.putExtra("key","True");
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                sendBroadcast(intent);
+                                mOverlayView.setVisibility(View.GONE);
+                                puzzleOngoing = true;
+                            }
+                        });
+                    }
+                    else if(mOverlayView.getVisibility() == View.GONE )
+                    {
+                        mOverlayView.setVisibility(View.VISIBLE);
+
+                    }
+
+
                 }
-                else if(mOverlayView.getVisibility() == View.GONE )
-                {
-                    mOverlayView.setVisibility(View.VISIBLE);
+            };
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(runner);
+        } else
+        {
+            Runnable runner = new Runnable() {
+                @Override
+                public void run() {
+                    if (overlayFail != null && overlayFail.getVisibility() == View.GONE )
+                    {
+                        overlayFail.setVisibility(View.VISIBLE);
+
+                    }
+                    if(overlayFail == null )
+                    {
+                        overlayFail = LayoutInflater.from(getApplicationContext()).inflate(R.layout.overlayfail, null);
+                        final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+//                            WindowManager.LayoutParams.WRAP_CONTENT,
+//                            WindowManager.LayoutParams.WRAP_CONTENT,
+                                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                                PixelFormat.TRANSLUCENT);
+                        WindowManager mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+                        mWindowManager.addView(overlayFail, params);
+
+                        final TextView failTimer = overlayFail.findViewById(R.id.FailTime);
+
+                        final Button buttonOkay = overlayFail.findViewById(R.id.okay);
+                        buttonOkay.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                overlayFail.setVisibility(View.GONE);
+                            }
+                        });
+
+                        new CountDownTimer(breakTime, 1000) {
+                            int minute = 0;
+                            boolean halfCheck = false;
+                            public void onTick(long millisUntilFinished) {
+
+                                if (minute == 0) {
+                                    failTimer.setText("Break Time Remaining: " + ((millisUntilFinished / 60000) + 1) + " : 00");
+                                    minute = 59;
+                                } else if (minute < 10) {
+                                    failTimer.setText("Break Time Remaining: " + (millisUntilFinished / 60000) + " : 0" + (minute));
+                                    minute = minute - 1;
+                                } else {
+                                    failTimer.setText("Break Time Remaining: " + (millisUntilFinished / 60000) + " : " + (minute));
+                                    minute = minute - 1;
+                                }
+//                                System.out.println("Hiii :" + (millisUntilFinished / 60000) + " | " + (breakTimeInt / 2)  );
+//                                if ((millisUntilFinished / 60000) == ((breakTimeInt / 2)-1) && !halfCheck) {
+////                        Toast.makeText(getContext(), "Halfway Through Break!", Toast.LENGTH_SHORT).show();
+//                                    backgroundNotification(("Halfway Through Break!"));
+//                                    halfCheck = true;
+                            }
+                            public void onFinish() {
+                                failTimer.setText("Done");
+                                SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db", MODE_PRIVATE, null);
+                                Cursor resultSet = mydatabase.rawQuery("UPDATE User SET Lives = '3' WHERE userId=1", null);
+                                resultSet.moveToFirst();
+                                mydatabase.close();
+//                                backgroundNotification(("Break Time Over!"));
+                                overlayFail.setVisibility(View.GONE);
+//
+
+                            }
+                        }.start();
+//
+                    }
+
+
 
                 }
+            };
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(runner);
+        }
 
 
-            }
-        };
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(runner);
 
     }
 
