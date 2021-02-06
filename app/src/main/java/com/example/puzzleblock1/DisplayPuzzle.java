@@ -40,8 +40,6 @@ public class DisplayPuzzle extends AppCompatActivity {
             getPuzzle();
         }
 
-
-
     }
 
     public boolean puzzleActive()

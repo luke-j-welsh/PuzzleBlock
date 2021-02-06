@@ -1,36 +1,19 @@
 package com.example.puzzleblock1;
 
 import android.app.AppOpsManager;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.usage.UsageEvents;
-import android.app.usage.UsageStats;
-import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.provider.Settings;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.TextView;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -41,12 +24,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import static androidx.core.content.ContextCompat.startForegroundService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -69,69 +46,23 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+
+        createDatabase();
+        createNotificationChannel();
         if (!isAccessGranted()) {
             Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             startActivity(intent);
         }
-
-
-        createDatabase();
-        createNotificationChannel();
-//
-//        Calendar beginCal = Calendar.getInstance();
-//        beginCal.set(Calendar.DATE, 3);
-//        beginCal.set(Calendar.MONTH, 1);
-//        beginCal.set(Calendar.YEAR, 2021);
-//
-//        Calendar endCal = Calendar.getInstance();
-//        endCal.set(Calendar.DATE, 4);
-//        endCal.set(Calendar.MONTH, 1);
-//        endCal.set(Calendar.YEAR, 2021);
-
-
-
-//        Timer backTimer = new Timer();
-//        TimerTask backgroundChecker = new TimerTask() {
-//            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-//            @Override
-//            public void run() {
-//                backgroundCheck();
-//            }
-//        };
-//        backTimer.schedule(backgroundChecker,0, 10000 );
-
-
-
-
-//
-//        final List<UsageStats> queryUsageStats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, beginCal.getTimeInMillis(), endCal.getTimeInMillis());
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.add(Calendar.MONTH, -1);
-//        long start = calendar.getTimeInMillis();
-//        long end = System.currentTimeMillis();
-//        List<UsageStats> queryUsageStats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_WEEKLY, start, end);
-//
-//        for(int i = 0; i < queryUsageStats.size();i++)
-//        {
-////            System.out.println("Thiiss onee " + queryUsageStats.get(i).getLastTimeUsed());
-//            System.out.println("Package Name: " + queryUsageStats.get(i).getPackageName() + " Last used: " + queryUsageStats.get(i).getLastTimeVisible());
-//
-//        }
-
-//        background();
-
-
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, APP_PERMISSION_REQUEST);
+        }
 
     }
 
 
-
-
-
-
-
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private boolean isAccessGranted() {
         try {
             PackageManager packageManager = getPackageManager();
@@ -148,11 +79,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
-
-
-
-
-
 
 
     public void createDatabase()
@@ -210,10 +136,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void overlay(){
-
-    }
 
 
 

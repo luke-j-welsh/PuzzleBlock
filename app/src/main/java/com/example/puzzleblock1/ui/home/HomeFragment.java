@@ -175,16 +175,11 @@ public class HomeFragment extends Fragment {
 
 
 
-
-
-
-
-
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void startTimer(int time, final TextView timerDisp)
     {
-        checkUserActivity();
+        startService();
+        displayInfo();
 
         new CountDownTimer(time, 1000) {
             int minute = 0;
@@ -216,27 +211,36 @@ public class HomeFragment extends Fragment {
     }
 
 
+    public void displayInfo()
+    {
+        TimerTask backgroundChecker = new TimerTask() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void run() {
+                getBreak();
+            }
+        };
+        backTimer = new Timer();
+        backTimer.schedule(backgroundChecker,0, 5000 );
+    }
 
-    public void checkUserActivity(){
-        backgroundCheckService.setAction("Start");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getContext())) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getActivity().getPackageName()));
-            startActivityForResult(intent, APP_PERMISSION_REQUEST);
-        }
-        else
-        {
-            TimerTask backgroundChecker = new TimerTask() {
-                @RequiresApi(api = Build.VERSION_CODES.O)
-                @Override
-                public void run() {
-                    getBreak();
-                    getActivity().startService(backgroundCheckService);
-                }
-            };
-            backTimer = new Timer();
-            backTimer.schedule(backgroundChecker,0, 5000 );
-        }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void startService(){
+        getActivity().startForegroundService(backgroundCheckService);
+
+
+//        TimerTask backgroundChecker = new TimerTask() {
+//                @RequiresApi(api = Build.VERSION_CODES.O)
+//                @Override
+//                public void run() {
+//                    getBreak();
+//                }
+//            };
+//            backTimer = new Timer();
+//            backTimer.schedule(backgroundChecker,0, 5000 );
+
     }
 
     public String timeChange(String initial, String addition, int posNeg)
@@ -281,7 +285,6 @@ public class HomeFragment extends Fragment {
 
 
 
-
     public void getBreak()
     {
         checkUser();
@@ -289,13 +292,15 @@ public class HomeFragment extends Fragment {
         Cursor resultSet = mydatabase.rawQuery("Select * from User WHERE userId=1",null);
         resultSet.moveToFirst();
         String breaker = resultSet.getString(4);
+        String lives = resultSet.getString(6);
+        int livesInt = Integer.parseInt(lives);
         mydatabase.close();
         int breakTime = breakTimeInt * 60000;
         if(breaker.equals("1"))
         {
-            backTimer.cancel();
-            backgroundNotification((breakStr + " Minute Break Begun!"));
-//            Toast.makeText(getContext(), (breakStr + " Minute Break Begun!"), Toast.LENGTH_SHORT).show();
+//            backTimer.cancel();
+//            backgroundNotification((breakStr + " Minute Break Begun!"));
+////            Toast.makeText(getContext(), (breakStr + " Minute Break Begun!"), Toast.LENGTH_SHORT).show();
             final int finalBreakTime = breakTime;
 
             new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -319,7 +324,7 @@ public class HomeFragment extends Fragment {
                             System.out.println("Hiii :" + (millisUntilFinished / 60000) + " | " + (breakTimeInt / 2)  );
                             if ((millisUntilFinished / 60000) == ((breakTimeInt / 2)-1) && !halfCheck) {
 //                        Toast.makeText(getContext(), "Halfway Through Break!", Toast.LENGTH_SHORT).show();
-                                backgroundNotification(("Halfway Through Break!"));
+//                                backgroundNotification(("Halfway Through Break!"));
                                 halfCheck = true;
                             }
 
@@ -327,14 +332,53 @@ public class HomeFragment extends Fragment {
 
                         public void onFinish() {
                             breakTimer.setText(null);
-                            SQLiteDatabase mydatabase = getActivity().openOrCreateDatabase("PuzzleDatabase.db", MODE_PRIVATE, null);
-                            Cursor resultSet = mydatabase.rawQuery("UPDATE User SET Break = '0' WHERE userId=1", null);
-                            resultSet.moveToFirst();
-                            mydatabase.close();
-                            backgroundNotification(("Break Time Over!"));
+
 
 //                    Toast.makeText(getContext(), "Break Time Over!", Toast.LENGTH_SHORT).show();
-                            checkUserActivity();
+//                            checkUserActivity();
+
+                        }
+                    }.start();
+                }
+
+            });
+        }else if (livesInt == 0)
+        {
+            final int finalBreakTime = breakTime;
+
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    new CountDownTimer(finalBreakTime, 1000) {
+                        int minute = 0;
+                        boolean halfCheck = false;
+                        public void onTick(long millisUntilFinished) {
+
+                            if (minute == 0) {
+                                breakTimer.setText("Try Again in: " + ((millisUntilFinished / 60000) + 1) + " : 00");
+                                minute = 59;
+                            } else if (minute < 10) {
+                                breakTimer.setText("Try Again in: " + (millisUntilFinished / 60000) + " : 0" + (minute));
+                                minute = minute - 1;
+                            } else {
+                                breakTimer.setText("Try Again in " + (millisUntilFinished / 60000) + " : " + (minute));
+                                minute = minute - 1;
+                            }
+                            System.out.println("Hiii :" + (millisUntilFinished / 60000) + " | " + (breakTimeInt / 2)  );
+                            if ((millisUntilFinished / 60000) == ((breakTimeInt / 2)-1) && !halfCheck) {
+//                        Toast.makeText(getContext(), "Halfway Through Break!", Toast.LENGTH_SHORT).show();
+//                                backgroundNotification(("Halfway Through Break!"));
+                                halfCheck = true;
+                            }
+
+                        }
+
+                        public void onFinish() {
+                            breakTimer.setText(null);
+
+
+//                    Toast.makeText(getContext(), "Break Time Over!", Toast.LENGTH_SHORT).show();
+//                            checkUserActivity();
 
                         }
                     }.start();
