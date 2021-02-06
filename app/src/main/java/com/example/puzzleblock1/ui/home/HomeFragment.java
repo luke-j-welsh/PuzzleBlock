@@ -148,6 +148,8 @@ public class HomeFragment extends Fragment {
                 Cursor resultSet3 = mydatabase.rawQuery("UPDATE User SET Lives = '3' WHERE userId=1",null);
                 resultSet3.moveToFirst();
             }
+            Cursor resultSet4 = mydatabase.rawQuery("UPDATE User SET PuzzleActive = '0' WHERE userId=1",null);
+            resultSet4.moveToFirst();
 
             System.out.println("This one " + breakStr);
         }

@@ -175,11 +175,12 @@ public class BackgroundService extends Service {
         String failTimeStr = resultSet2.getString(5);
         failTime = Integer.parseInt(failTimeStr);
         final int breakTime = failTime * 60000;
-
-
+        String active = resultSet2.getString(7);
+        int activeInt = Integer.parseInt(active);
+        System.out.println("Hi this one : " + activeInt);
         int livesInt = Integer.parseInt(livesAmount);
 
-        if(livesInt > 0)
+        if(livesInt > 0 && activeInt == 0)
         {
             Runnable runner = new Runnable() {
                 @Override
@@ -203,10 +204,10 @@ public class BackgroundService extends Service {
                                 Intent puzzleStart = new Intent(getApplicationContext(), DisplayPuzzle.class);
                                 puzzleStart.addFlags(FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(puzzleStart);
-                                Intent intent = new Intent("puzzleComplete");
-                                intent.putExtra("key","True");
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                sendBroadcast(intent);
+//                                Intent intent = new Intent("puzzleComplete");
+//                                intent.putExtra("key","True");
+//                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                sendBroadcast(intent);
                                 mOverlayView.setVisibility(View.GONE);
                                 puzzleOngoing = true;
                             }
@@ -223,7 +224,7 @@ public class BackgroundService extends Service {
             };
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(runner);
-        } else
+        } else if ((livesInt == 0 && activeInt == 0))
         {
             Runnable runner = new Runnable() {
                 @Override
@@ -251,7 +252,12 @@ public class BackgroundService extends Service {
                         buttonOkay.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                Intent intent = new Intent(Intent.ACTION_MAIN);
+                                intent.addCategory(Intent.CATEGORY_HOME);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
                                 overlayFail.setVisibility(View.GONE);
+
                             }
                         });
 

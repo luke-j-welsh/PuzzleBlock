@@ -36,9 +36,33 @@ public class DisplayPuzzle extends AppCompatActivity {
         lives = findViewById(R.id.Lives);
         puzzleBodyV = findViewById(R.id.textView);
         submit = findViewById(R.id.button);
-        getPuzzle();
+        if(puzzleActive()){
+            getPuzzle();
+        }
 
 
+
+    }
+
+    public boolean puzzleActive()
+    {
+        SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
+        Cursor resultSet2 = mydatabase.rawQuery("Select * from User WHERE userId=1",null);
+        resultSet2.moveToFirst();
+        String active = resultSet2.getString(7);
+        int activeInt = Integer.parseInt(active);
+        if(activeInt == 0)
+        {
+            Cursor resultSet = mydatabase.rawQuery("UPDATE User SET PuzzleActive = '1' WHERE userId=1",null);
+            resultSet.moveToFirst();
+            mydatabase.close();
+
+            return true;
+        }else
+        {
+            mydatabase.close();
+            return false;
+        }
 
     }
 
@@ -74,8 +98,11 @@ public class DisplayPuzzle extends AppCompatActivity {
 
     public void submitAnswer(View view) {
         String answer = answerInput.getText().toString();
+        SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
         if(answer.equals(userPuzzle.getPuzzleAns()))
         {
+            Cursor resultSet = mydatabase.rawQuery("UPDATE User SET PuzzleActive = '0' WHERE userId=1",null);
+            resultSet.moveToFirst();
             userComm.setText("Correct!");
             answerInput.setText(null);
             setBreak();
@@ -83,7 +110,6 @@ public class DisplayPuzzle extends AppCompatActivity {
         }else
         {
             userComm.setText("Incorrect!");
-            SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
             Integer livesNum = Integer.parseInt(livesAmount);
 
             livesNum = livesNum - 1;
@@ -93,10 +119,13 @@ public class DisplayPuzzle extends AppCompatActivity {
             lives.setText(livesAmount);
             if(livesNum <= 0)
             {
+                Cursor resultSet2 = mydatabase.rawQuery("UPDATE User SET PuzzleActive = '0' WHERE userId=1",null);
+                resultSet2.moveToFirst();
                 userComm.setVisibility(View.GONE);
                 answerInput.setVisibility(View.GONE);
                 puzzleBodyV.setVisibility(View.GONE);
                 submit.setVisibility(View.GONE);
+                finish();
             }
 
         }
