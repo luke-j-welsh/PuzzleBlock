@@ -77,6 +77,8 @@ public class HomeFragment extends Fragment {
         final FloatingActionButton buttonStart = v.findViewById(R.id.startButton);
 
         backgroundCheckService = new Intent(getContext(), BackgroundService.class);
+        backgroundCheckService.setAction("start");
+        backTimer.cancel();
         breakTimer = v.findViewById(R.id.breakTimer);
         time = v.findViewById(R.id.userTime);
         String startTxt = (appTimeStr + " Minutes");
@@ -106,7 +108,7 @@ public class HomeFragment extends Fragment {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
-                appTime = appTime * 60000;
+                appTime = appTime * 6000;
                 buttonUp.setVisibility(View.GONE);
                 buttonDown.setVisibility(View.GONE);
                 buttonStart.setVisibility(View.GONE);
@@ -203,7 +205,7 @@ public class HomeFragment extends Fragment {
             public void onFinish() {
                 timerDisp.setText("done!");
                 Intent stopService = new Intent(getContext(), BackgroundService.class);
-                stopService.setAction("Stop");
+                stopService.setAction("stop");
                 getActivity().startService(stopService);
                 backTimer.cancel();
             }

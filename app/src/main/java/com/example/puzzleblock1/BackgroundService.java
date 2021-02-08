@@ -68,6 +68,7 @@ public class BackgroundService extends Service {
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void handleMessage(Message msg) {
+            System.out.println("HIII");
             backgroundCheck();
 //            stopSelf(msg.arg1);
             // Stop the service using the startId, so that we don't stop
@@ -129,20 +130,21 @@ public class BackgroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Message msg = serviceHandler.obtainMessage();
-        msg.arg1 = startId;
-        serviceHandler.sendMessage(msg);
-//        if (intent.getAction().equals("Start")) {
-////            Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
-//            // For each start request, send a message to start a job and deliver the
-//            // start ID so we know which request we're stopping when we finish the job
-//
-//        }
-//        else if (intent.getAction().equals("Stop")) {
-//            //your end servce code
-//            stopForeground(true);
-//            stopSelfResult(startId);
-//        }
+//        Message msg = serviceHandler.obtainMessage();
+//        msg.arg1 = startId;
+//        serviceHandler.sendMessage(msg);
+
+        if (intent.getAction().equals("start")) {
+         Message msg = serviceHandler.obtainMessage();
+         msg.arg1 = startId;
+         serviceHandler.sendMessage(msg);
+        }
+        else if (intent.getAction().equals("stop")) {
+            //your end servce code
+            stopForeground(true);
+            backTimer.cancel();
+            stopSelf();
+        }
         return START_STICKY;
 
 
