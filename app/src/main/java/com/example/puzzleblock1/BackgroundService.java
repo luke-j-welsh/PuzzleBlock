@@ -38,6 +38,8 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.example.puzzleblock1.ui.home.HomeFragment;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -59,6 +61,7 @@ public class BackgroundService extends Service {
     public NotificationCompat.Builder notificationBuilder;
     public NotificationManager manager;
     public boolean lostTimer = false;
+    public ArrayList<String> userChoices = new ArrayList<String>();
 
     // Handler that receives messages from the thread
     private final class ServiceHandler extends Handler {
@@ -135,9 +138,10 @@ public class BackgroundService extends Service {
 //        serviceHandler.sendMessage(msg);
 
         if (intent.getAction().equals("start")) {
-         Message msg = serviceHandler.obtainMessage();
-         msg.arg1 = startId;
-         serviceHandler.sendMessage(msg);
+            getUserChoices();
+            Message msg = serviceHandler.obtainMessage();
+            msg.arg1 = startId;
+            serviceHandler.sendMessage(msg);
         }
         else if (intent.getAction().equals("stop")) {
             //your end servce code
@@ -176,10 +180,10 @@ public class BackgroundService extends Service {
                     events.getNextEvent(nextEvent);
                     System.out.println("| This one: " + nextEvent.getPackageName() + "| Time: " + nextEvent.getTimeStamp());
 
-                    if(nextEvent.getPackageName().equals("com.twitter.android") || nextEvent.getPackageName().equals("com.snapchat.android") || nextEvent.getPackageName().equals("com.andrewshu.android.reddit")
-                            || nextEvent.getPackageName().equals("com.facebook.katana") || nextEvent.getPackageName().equals("com.facebook.orca") || nextEvent.getPackageName().equals("com.instagram.android") )
+                    if(userChoices.contains(nextEvent.getPackageName()))
                     {
                         createOverlay();
+                        break;
                     }
                 }
 
@@ -189,6 +193,57 @@ public class BackgroundService extends Service {
         backTimer.schedule(backgroundChecker,0, 5000 );
 
     }
+
+    public void getUserChoices()
+    {
+        SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
+        Cursor resultSet = mydatabase.rawQuery("Select * from UserChoice WHERE userId=1",null);
+        resultSet.moveToFirst();
+//        String snap = resultSet.getString(2);
+//        String face = resultSet.getString(3);
+//        String faceMess = resultSet.getString(4);
+//        String insta = resultSet.getString(5);
+//        String reddit = resultSet.getString(6);
+//        String tik = resultSet.getString(7);
+//        String you = resultSet.getString(8);
+        for(int i = 1; i < resultSet.getColumnCount(); i++)
+        {
+            String userChoice = resultSet.getString(i);
+            int userChoiceInt = Integer.parseInt(userChoice);
+            if(userChoiceInt == 1)
+            {
+                if(i==1)
+                {
+                    userChoices.add("com.twitter.android");
+                }else if (i == 2)
+                {
+                    userChoices.add("com.snapchat.android");
+                }else if (i == 3)
+                {
+                    userChoices.add("com.facebook.katana");
+                }else if (i == 4)
+                {
+                    userChoices.add("com.facebook.orca");
+                }else if (i == 5)
+                {
+                    userChoices.add("com.instagram.android");
+                }else if (i == 6)
+                {
+                    userChoices.add("com.reddit.frontpage");
+                }else if (i == 7)
+                {
+                    userChoices.add("com.zhiliaoapp.musically");
+                }else if (i == 8)
+                {
+                    userChoices.add("com.google.android.youtube");
+                }
+
+            }
+
+        }
+
+    }
+
 
     @SuppressLint("InflateParams")
     @RequiresApi(api = Build.VERSION_CODES.O)

@@ -17,7 +17,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".UserCreation"></activity>
+        <activity android:name=".BlockingChoice"></activity>
+        <activity android:name=".UserCreation" />
 
         <service
             android:name=".BackgroundService"

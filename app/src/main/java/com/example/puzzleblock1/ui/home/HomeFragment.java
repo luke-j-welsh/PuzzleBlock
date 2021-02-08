@@ -108,7 +108,7 @@ public class HomeFragment extends Fragment {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
-                appTime = appTime * 6000;
+                appTime = appTime * 60000;
                 buttonUp.setVisibility(View.GONE);
                 buttonDown.setVisibility(View.GONE);
                 buttonStart.setVisibility(View.GONE);

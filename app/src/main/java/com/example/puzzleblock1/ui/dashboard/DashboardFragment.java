@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.puzzleblock1.BlockingChoice;
 import com.example.puzzleblock1.DisplayPuzzle;
 import com.example.puzzleblock1.R;
 import com.example.puzzleblock1.UserCreation;
@@ -39,6 +40,7 @@ public class DashboardFragment extends Fragment {
         });
 
         final Button userButton = root.findViewById(R.id.userUpdate);
+        final Button choiceButton = root.findViewById(R.id.userChoices);
 
 
         userButton.setOnClickListener(new View.OnClickListener() {
@@ -48,7 +50,18 @@ public class DashboardFragment extends Fragment {
                 startActivity(updateUser);
             }
         });
+
+        choiceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent userChoice = new Intent(getActivity(), BlockingChoice.class);
+                startActivity(userChoice);
+            }
+        });
+
         return root;
+
+
     }
 
 
