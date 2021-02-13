@@ -35,6 +35,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.puzzleblock1.BackgroundService;
+import com.example.puzzleblock1.BlockingChoice;
 import com.example.puzzleblock1.DisplayPuzzle;
 import com.example.puzzleblock1.R;
 import com.example.puzzleblock1.UserCreation;
@@ -129,6 +130,9 @@ public class HomeFragment extends Fragment {
         {
             Intent newUser = new Intent(getContext(), UserCreation.class);
             startActivity(newUser);
+
+            Intent newUser2 = new Intent (getContext(), BlockingChoice.class);
+            startActivity(newUser2);
         } else if (resultSet.getCount() == 1)
         {
             resultSet.moveToFirst();
