@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">PuzzleBlock1</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_dashboard">Settings</string>
+    <string name="title_notifications">Stats</string>
     <string name="answer_message">Answer...</string>
     <string name="button_answer">Submit</string>
     <string name="PuzzleBody">PuzzleBody</string>
@@ -14,7 +14,7 @@
     <string name="Category2">Words</string>
     <string name="Category2Body">Puzzles to Improve Your English Skills</string>
     <string name="Category3">Pictures</string>
-    <string name="Category3Body">Puzzles to Improve your Problem Solving Skills</string>
+    <string name="Category3Body">Coming Soon</string>
     <string name="BreakBody">The Length of Your Break After Completing a Puzzle, Before You Are Blocked Again</string>
-    <string name="BreakTitle">Break Time</string>
+    <string name="BreakTitle">Time</string>
 </resources>

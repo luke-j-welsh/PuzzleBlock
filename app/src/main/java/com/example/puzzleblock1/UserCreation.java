@@ -19,6 +19,7 @@ public class UserCreation extends AppCompatActivity {
     public int breakTime;
     public int lives = 3;
     public int puzzleActive = 0;
+    public int timingActive = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,7 @@ public class UserCreation extends AppCompatActivity {
         Cursor resultSet = mydatabase.rawQuery("Select * from User WHERE userId=1",null);
         if(resultSet.getCount() == 0)
         {
-            mydatabase.execSQL("INSERT INTO User VALUES('1', " + category1 + ", " + category2 + ", " + category3 + ", " + 0 + ", " + breakTime + ", " + lives + ", " + puzzleActive + " );");
+            mydatabase.execSQL("INSERT INTO User VALUES('1', " + category1 + ", " + category2 + ", " + category3 + ", " + 0 + ", " + breakTime + ", " + lives + ", " + puzzleActive + ", " + timingActive + " );");
         } else if (resultSet.getCount() == 1)
         {
             Cursor resultSet2 = mydatabase.rawQuery("UPDATE User SET Category1 = " + category1 + ", Category2 = " + category2 + ", Category3 = " + category3 + ", BreakTime = " + breakTime + " WHERE userId=1", null);

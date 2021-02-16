@@ -33,6 +33,7 @@ public class DisplayPuzzle extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_puzzle);
+//        getActionBar().setDisplayHomeAsUpEnabled(false);
         answerInput = findViewById(R.id.userAnswer);
         userComm = findViewById(R.id.textView2);
         lives = findViewById(R.id.Lives);

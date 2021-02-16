@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.puzzleblock1.BackgroundService;
 import com.example.puzzleblock1.BlockingChoice;
 import com.example.puzzleblock1.DisplayPuzzle;
 import com.example.puzzleblock1.R;
@@ -41,13 +42,22 @@ public class DashboardFragment extends Fragment {
 
         final Button userButton = root.findViewById(R.id.userUpdate);
         final Button choiceButton = root.findViewById(R.id.userChoices);
-
+        final Button killButton = root.findViewById(R.id.killButton);
 
         userButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent updateUser = new Intent(getActivity(), UserCreation.class);
                 startActivity(updateUser);
+            }
+        });
+
+        killButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent stopService = new Intent(getContext(), BackgroundService.class);
+                stopService.setAction("stop");
+                getActivity().startService(stopService);
             }
         });
 

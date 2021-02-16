@@ -39,6 +39,8 @@ import com.example.puzzleblock1.BlockingChoice;
 import com.example.puzzleblock1.DisplayPuzzle;
 import com.example.puzzleblock1.R;
 import com.example.puzzleblock1.UserCreation;
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Timer;
@@ -51,12 +53,17 @@ import static androidx.core.content.ContextCompat.startForegroundService;
 public class HomeFragment extends Fragment {
 
     private static final int APP_PERMISSION_REQUEST = 1 ;
-
+    public boolean timingActive;
     private HomeViewModel homeViewModel;
     public int appTime = 60;
     public String appTimeStr = "60";
     public TextView time;
     public TextView breakTimer;
+    public BottomNavigationView bottomBar;
+
+    public FloatingActionButton buttonUp;
+    public FloatingActionButton buttonDown;
+    public FloatingActionButton buttonStart;
 
     private static final String CHANNEL_ID = "Puzzle" ;
     public Timer backTimer = new Timer();
@@ -73,21 +80,31 @@ public class HomeFragment extends Fragment {
 
 
         checkUserInit();
-        final FloatingActionButton buttonUp = v.findViewById(R.id.upButton);
-        final FloatingActionButton buttonDown = v.findViewById(R.id.downButton);
-        final FloatingActionButton buttonStart = v.findViewById(R.id.startButton);
+        buttonUp = v.findViewById(R.id.upButton);
+        buttonDown = v.findViewById(R.id.downButton);
+        buttonStart = v.findViewById(R.id.startButton);
+
 
         backgroundCheckService = new Intent(getContext(), BackgroundService.class);
         backgroundCheckService.setAction("start");
-        backTimer.cancel();
         breakTimer = v.findViewById(R.id.breakTimer);
         time = v.findViewById(R.id.userTime);
-        String startTxt = (appTimeStr + " Minutes");
-        time.setText(startTxt);
+        bottomBar = getActivity().findViewById(R.id.nav_view);
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
 
 
+        String startTxt = (appTimeStr + " Minutes");
+        time.setText(startTxt);
+        backTimer.cancel();
+        buttonUp.setVisibility(View.VISIBLE);
+        buttonDown.setVisibility(View.VISIBLE);
+        buttonStart.setVisibility(View.VISIBLE);
+//        if(!timingActive)
+//        {
+//
+//
+//        }
         buttonUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,8 +130,14 @@ public class HomeFragment extends Fragment {
                 buttonUp.setVisibility(View.GONE);
                 buttonDown.setVisibility(View.GONE);
                 buttonStart.setVisibility(View.GONE);
+//                bottomBar.setVisibility(View.INVISIBLE);
+                bottomBar.setVisibility(View.GONE);
 
+//                SQLiteDatabase mydatabase = getActivity().openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
+//                Cursor resultSet2 = mydatabase.rawQuery("UPDATE User SET timingActive = '1' WHERE userId=1",null);
+//                resultSet2.moveToFirst();
                 startTimer(appTime, time);
+
             }
         });
 
@@ -157,7 +180,9 @@ public class HomeFragment extends Fragment {
             Cursor resultSet4 = mydatabase.rawQuery("UPDATE User SET PuzzleActive = '0' WHERE userId=1",null);
             resultSet4.moveToFirst();
 
-            System.out.println("This one " + breakStr);
+
+
+
         }
         mydatabase.close();
     }
@@ -210,6 +235,14 @@ public class HomeFragment extends Fragment {
                 timerDisp.setText("done!");
                 Intent stopService = new Intent(getContext(), BackgroundService.class);
                 stopService.setAction("stop");
+                bottomBar.setVisibility(View.VISIBLE);
+                String startTxt = (appTimeStr + " Minutes");
+                timerDisp.setText(startTxt);
+                backTimer.cancel();
+                buttonUp.setVisibility(View.VISIBLE);
+                buttonDown.setVisibility(View.VISIBLE);
+                buttonStart.setVisibility(View.VISIBLE);
+                appTime = 60;
                 getActivity().startService(stopService);
                 backTimer.cancel();
             }

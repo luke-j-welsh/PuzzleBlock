@@ -37,6 +37,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.puzzleblock1.ui.home.HomeFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,6 +140,7 @@ public class BackgroundService extends Service {
 
         if (intent.getAction().equals("start")) {
             getUserChoices();
+
             Message msg = serviceHandler.obtainMessage();
             msg.arg1 = startId;
             serviceHandler.sendMessage(msg);
