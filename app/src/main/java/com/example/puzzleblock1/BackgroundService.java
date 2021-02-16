@@ -120,7 +120,7 @@ public class BackgroundService extends Service {
 
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
         notification = notificationBuilder.setOngoing(true)
-                .setSmallIcon(R.drawable.ic_home_black_24dp)
+                .setSmallIcon(R.drawable.ic_puzzle_notify)
                 .setContentTitle("Blocking Active!")
                 .setPriority(NotificationManager.IMPORTANCE_MIN)
                 .setCategory(Notification.CATEGORY_SERVICE)
@@ -533,7 +533,7 @@ public class BackgroundService extends Service {
 
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_home_black_24dp)
+                        .setSmallIcon(R.drawable.ic_puzzle_notify)
                         .setContentTitle("Puzzle Time")
                         .setContentText(message)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PuzzleBlock1</string>
+    <string name="app_name">Puzzle Block</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Settings</string>
     <string name="title_notifications">Stats</string>
@@ -13,8 +13,8 @@
     <string name="Category1Body">A Variety of Maths Puzzles to Challenge Yourself</string>
     <string name="Category2">Words</string>
     <string name="Category2Body">Puzzles to Improve Your English Skills</string>
-    <string name="Category3">Pictures</string>
-    <string name="Category3Body">Coming Soon</string>
+    <string name="Category3">Trivia</string>
+    <string name="Category3Body">General Knowledge Questions From a Range of Subjects</string>
     <string name="BreakBody">The Length of Your Break After Completing a Puzzle, Before You Are Blocked Again</string>
     <string name="BreakTitle">Time</string>
 </resources>

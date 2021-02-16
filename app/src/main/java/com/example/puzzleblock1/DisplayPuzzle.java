@@ -17,6 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class DisplayPuzzle extends AppCompatActivity {
@@ -29,6 +30,9 @@ public class DisplayPuzzle extends AppCompatActivity {
     public String livesAmount;
     public int category1;
     public int category2;
+    public int category3;
+    public ArrayList<Integer> categoryList = new ArrayList<Integer>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,8 +56,24 @@ public class DisplayPuzzle extends AppCompatActivity {
         resultSet2.moveToFirst();
         String category1Str = resultSet2.getString(1);
         String category2Str = resultSet2.getString(2);
+        String category3Str = resultSet2.getString(3);
         category1 = Integer.parseInt(category1Str);
         category2 = Integer.parseInt(category2Str);
+        category3 = Integer.parseInt(category3Str);
+        if(category1 == 1)
+        {
+            categoryList.add(1);
+        }
+        if(category2==1)
+        {
+            categoryList.add(2);
+        }
+        if(category3==1)
+        {
+            categoryList.add(3);
+        }
+
+
     }
 
     public boolean puzzleActive()
@@ -82,82 +102,42 @@ public class DisplayPuzzle extends AppCompatActivity {
         puzzleCategories();
         this.moveTaskToBack(false);
         userComm.setText(null);
-        int puzzleId;
-        Random random = new Random();
-        if(category1 == 1 && category2 == 1)
-        {
-            int puzzleTypeInt =  random.nextInt(3-1)+1;;
-            System.out.println("puzzleType " + puzzleTypeInt);
-
-            if(puzzleTypeInt == 1)
-            {
-                puzzleId = random.nextInt(10-1)+1;
-            }else{
-                puzzleId = random.nextInt(15-1)+1;
-            }
-            System.out.println("puzzleId " + puzzleId);
-            SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
-            Cursor resultSet = mydatabase.rawQuery("Select * from Puzzles WHERE puzzleType = " + puzzleTypeInt + " AND typeId ="+puzzleId,null);
-            resultSet.moveToFirst();
-            String puzzleName = resultSet.getString(0);
-            String puzzleType = resultSet.getString(1);
-            String puzzleBody = resultSet.getString(3);
-            String puzzleAns = resultSet.getString(4);
-            userPuzzle = new Puzzle(puzzleId,puzzleName,puzzleType,puzzleBody,puzzleAns);
-            String body = userPuzzle.getPuzzleBody();
-            puzzleBodyV.setText(body);
-            Cursor resultSet2 = mydatabase.rawQuery("Select * from User WHERE userId=1",null);
-            resultSet2.moveToFirst();
-            livesAmount = resultSet2.getString(6);
-            lives.setText(livesAmount);
-            mydatabase.close();
-        }else if(category1 == 1 && category2 == 0)
-        {
-            puzzleId = random.nextInt(10-1)+1;
-            System.out.println("puzzleId " + puzzleId);
-            SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
-            Cursor resultSet = mydatabase.rawQuery("Select * from Puzzles WHERE puzzleType = " + 1 + " AND typeId ="+puzzleId,null);
-            resultSet.moveToFirst();
-            String puzzleName = resultSet.getString(0);
-            String puzzleType = resultSet.getString(1);
-            String puzzleBody = resultSet.getString(3);
-            String puzzleAns = resultSet.getString(4);
-            userPuzzle = new Puzzle(puzzleId,puzzleName,puzzleType,puzzleBody,puzzleAns);
-            String body = userPuzzle.getPuzzleBody();
-            puzzleBodyV.setText(body);
-            Cursor resultSet2 = mydatabase.rawQuery("Select * from User WHERE userId=1",null);
-            resultSet2.moveToFirst();
-            livesAmount = resultSet2.getString(6);
-            lives.setText(livesAmount);
-            mydatabase.close();
-        }else if (category2 == 1 && category1 == 0)
-        {
-            puzzleId = random.nextInt(15-1)+1;
-            System.out.println("puzzleId " + puzzleId);
-            SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
-            Cursor resultSet = mydatabase.rawQuery("Select * from Puzzles WHERE puzzleType = " + 2 + " AND typeId ="+puzzleId,null);
-            resultSet.moveToFirst();
-            String puzzleName = resultSet.getString(0);
-            String puzzleType = resultSet.getString(1);
-            String puzzleBody = resultSet.getString(3);
-            String puzzleAns = resultSet.getString(4);
-            userPuzzle = new Puzzle(puzzleId,puzzleName,puzzleType,puzzleBody,puzzleAns);
-            String body = userPuzzle.getPuzzleBody();
-            puzzleBodyV.setText(body);
-            Cursor resultSet2 = mydatabase.rawQuery("Select * from User WHERE userId=1",null);
-            resultSet2.moveToFirst();
-            livesAmount = resultSet2.getString(6);
-            lives.setText(livesAmount);
-            mydatabase.close();
-        }
-
-
-
-
-
-
+        choosePuzzle();
     }
 
+    public void choosePuzzle()
+    {
+        int puzzleId = 0;
+        Random random = new Random();
+        int puzzleTypeInt = random.nextInt(categoryList.size());
+        int chosenCategory = categoryList.get(puzzleTypeInt);
+        System.out.println("puzzleType " + puzzleTypeInt);
+
+        if (chosenCategory == 1) {
+            puzzleId = random.nextInt(10 - 1) + 1;
+        } else if(chosenCategory==2){
+            puzzleId = random.nextInt(15 - 1) + 1;
+        }else if(chosenCategory==3){
+            puzzleId = random.nextInt(35 - 1) + 1;
+        }
+        System.out.println("puzzleId " + puzzleId);
+        SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db", MODE_PRIVATE, null);
+        Cursor resultSet = mydatabase.rawQuery("Select * from Puzzles WHERE puzzleType = " + chosenCategory + " AND typeId =" + puzzleId, null);
+        resultSet.moveToFirst();
+        String puzzleName = resultSet.getString(0);
+        String puzzleType = resultSet.getString(1);
+        String puzzleBody = resultSet.getString(3);
+        String puzzleAns = resultSet.getString(4);
+        userPuzzle = new Puzzle(puzzleId, puzzleName, puzzleType, puzzleBody, puzzleAns);
+        String body = userPuzzle.getPuzzleBody();
+        puzzleBodyV.setText(body);
+        Cursor resultSet2 = mydatabase.rawQuery("Select * from User WHERE userId=1", null);
+        resultSet2.moveToFirst();
+        livesAmount = resultSet2.getString(6);
+        lives.setText(livesAmount);
+        mydatabase.close();
+
+    }
 
 
 
