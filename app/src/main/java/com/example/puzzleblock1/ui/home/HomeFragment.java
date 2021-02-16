@@ -55,6 +55,8 @@ public class HomeFragment extends Fragment {
     private static final int APP_PERMISSION_REQUEST = 1 ;
     public boolean timingActive;
     private HomeViewModel homeViewModel;
+    public boolean breakCheck = false;
+    public boolean livesCheck = false;
     public int appTime = 60;
     public String appTimeStr = "60";
     public TextView time;
@@ -335,13 +337,13 @@ public class HomeFragment extends Fragment {
         int livesInt = Integer.parseInt(lives);
         mydatabase.close();
         int breakTime = breakTimeInt * 60000;
-        if(breaker.equals("1"))
+        if(breaker.equals("1") && breakCheck == false)
         {
 //            backTimer.cancel();
 //            backgroundNotification((breakStr + " Minute Break Begun!"));
 ////            Toast.makeText(getContext(), (breakStr + " Minute Break Begun!"), Toast.LENGTH_SHORT).show();
             final int finalBreakTime = breakTime;
-
+            breakCheck = true;
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
@@ -371,7 +373,7 @@ public class HomeFragment extends Fragment {
 
                         public void onFinish() {
                             breakTimer.setText(null);
-
+                            breakCheck = false;
 
 //                    Toast.makeText(getContext(), "Break Time Over!", Toast.LENGTH_SHORT).show();
 //                            checkUserActivity();
@@ -381,10 +383,10 @@ public class HomeFragment extends Fragment {
                 }
 
             });
-        }else if (livesInt == 0)
+        }else if ((livesInt == 0) && (!livesCheck))
         {
             final int finalBreakTime = breakTime;
-
+            livesCheck = true;
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
@@ -414,7 +416,7 @@ public class HomeFragment extends Fragment {
 
                         public void onFinish() {
                             breakTimer.setText(null);
-
+                            breakCheck = false;
 
 //                    Toast.makeText(getContext(), "Break Time Over!", Toast.LENGTH_SHORT).show();
 //                            checkUserActivity();
