@@ -1,22 +1,15 @@
 package com.example.puzzleblock1;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -31,13 +24,12 @@ public class DisplayPuzzle extends AppCompatActivity {
     public int category1;
     public int category2;
     public int category3;
-    public ArrayList<Integer> categoryList = new ArrayList<Integer>();
+    public ArrayList<Integer> categoryList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_puzzle);
-//        getActionBar().setDisplayHomeAsUpEnabled(false);
         answerInput = findViewById(R.id.userAnswer);
         userComm = findViewById(R.id.textView2);
         lives = findViewById(R.id.Lives);
@@ -46,6 +38,22 @@ public class DisplayPuzzle extends AppCompatActivity {
         if(puzzleActive()){
             getPuzzle();
         }
+
+        final Button buttonOkay = findViewById(R.id.button4);
+        buttonOkay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
+                Cursor resultSet = mydatabase.rawQuery("UPDATE User SET PuzzleActive = '0' WHERE userId=1",null);
+                resultSet.moveToFirst();
+                startActivity(intent);
+                resultSet.close();
+                finish();
+            }
+        });
 
     }
 
@@ -72,8 +80,7 @@ public class DisplayPuzzle extends AppCompatActivity {
         {
             categoryList.add(3);
         }
-
-
+        resultSet2.close();
     }
 
     public boolean puzzleActive()
@@ -88,11 +95,13 @@ public class DisplayPuzzle extends AppCompatActivity {
             Cursor resultSet = mydatabase.rawQuery("UPDATE User SET PuzzleActive = '1' WHERE userId=1",null);
             resultSet.moveToFirst();
             mydatabase.close();
-
+            resultSet2.close();
+            resultSet.close();
             return true;
         }else
         {
             mydatabase.close();
+            resultSet2.close();
             return false;
         }
 
@@ -111,16 +120,14 @@ public class DisplayPuzzle extends AppCompatActivity {
         Random random = new Random();
         int puzzleTypeInt = random.nextInt(categoryList.size());
         int chosenCategory = categoryList.get(puzzleTypeInt);
-        System.out.println("puzzleType " + puzzleTypeInt);
 
         if (chosenCategory == 1) {
-            puzzleId = random.nextInt(10 - 1) + 1;
+            puzzleId = random.nextInt(30 - 1) + 1;
         } else if(chosenCategory==2){
-            puzzleId = random.nextInt(15 - 1) + 1;
+            puzzleId = random.nextInt(31 - 1) + 1;
         }else if(chosenCategory==3){
-            puzzleId = random.nextInt(35 - 1) + 1;
+            puzzleId = random.nextInt(40 - 1) + 1;
         }
-        System.out.println("puzzleId " + puzzleId);
         SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db", MODE_PRIVATE, null);
         Cursor resultSet = mydatabase.rawQuery("Select * from Puzzles WHERE puzzleType = " + chosenCategory + " AND typeId =" + puzzleId, null);
         resultSet.moveToFirst();
@@ -136,11 +143,13 @@ public class DisplayPuzzle extends AppCompatActivity {
         livesAmount = resultSet2.getString(6);
         lives.setText(livesAmount);
         mydatabase.close();
-
+        resultSet2.close();
+        resultSet.close();
     }
 
 
 
+    @SuppressLint("SetTextI18n")
     public void submitAnswer(View view) {
         String answer = answerInput.getText().toString();
         answer = answer.toLowerCase();
@@ -152,14 +161,14 @@ public class DisplayPuzzle extends AppCompatActivity {
             userComm.setText("Correct!");
             answerInput.setText(null);
             setBreak();
+            resultSet.close();
             finish();
         }else
         {
-            userComm.setText("Incorrect!");
-            Integer livesNum = Integer.parseInt(livesAmount);
-
+            int livesNum = Integer.parseInt(livesAmount);
             livesNum = livesNum - 1;
-            livesAmount = livesNum.toString();
+            livesAmount = Integer.toString(livesNum);
+            userComm.setText("Incorrect! " + livesAmount + " Lives Remaining!");
             Cursor resultSet = mydatabase.rawQuery("UPDATE User SET Lives = "+ livesAmount +" WHERE userId=1",null);
             resultSet.moveToFirst();
             lives.setText(livesAmount);
@@ -171,9 +180,10 @@ public class DisplayPuzzle extends AppCompatActivity {
                 answerInput.setVisibility(View.GONE);
                 puzzleBodyV.setVisibility(View.GONE);
                 submit.setVisibility(View.GONE);
+                resultSet2.close();
                 finish();
             }
-
+            resultSet.close();
         }
     }
 
@@ -183,6 +193,7 @@ public class DisplayPuzzle extends AppCompatActivity {
         Cursor resultSet = mydatabase.rawQuery("UPDATE User SET Break = '1' WHERE userId=1",null);
         resultSet.moveToFirst();
         mydatabase.close();
+        resultSet.close();
     }
 
 

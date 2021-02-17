@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.view.View;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.annotation.RequiresApi;
@@ -40,15 +39,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
-//        navView.setVisibility(View.GONE);
         createDatabase();
         createNotificationChannel();
         if (!isAccessGranted()) {
@@ -86,16 +82,11 @@ public class MainActivity extends AppCompatActivity {
     public void createDatabase()
     {
         File dbfile = new File(this.getDatabasePath("PuzzleDatabase.db").getPath());
-        System.out.println("Hi we in here!");
-
         if (!dbfile.exists())
         {
-            System.out.println("Doesnt existtt");
             String appDataPath = this.getApplicationInfo().dataDir;
-
-            File dbFolder = new File(appDataPath + "/databases");//Make sure the /databases folder exists
-            dbFolder.mkdir();//This can be called multiple times.
-
+            File dbFolder = new File(appDataPath + "/databases");
+            dbFolder.mkdir();
             File dbFilePath = new File(appDataPath + "/databases/PuzzleDatabase.db");
 
             try {
@@ -113,9 +104,6 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e){
                 //handle
             }
-        }else
-        {
-            System.out.println("DB Does Exist!");
         }
 
 
@@ -123,22 +111,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.channel_name);
             String description = getString(R.string.channel_description);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
     }
-
-
-
-
 }

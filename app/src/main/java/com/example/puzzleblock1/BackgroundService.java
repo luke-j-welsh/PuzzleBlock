@@ -1,7 +1,6 @@
 package com.example.puzzleblock1;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -22,25 +21,15 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.os.Process;
-
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-
-import com.example.puzzleblock1.ui.home.HomeFragment;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -72,11 +61,7 @@ public class BackgroundService extends Service {
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void handleMessage(Message msg) {
-            System.out.println("HIII");
             backgroundCheck();
-//            stopSelf(msg.arg1);
-            // Stop the service using the startId, so that we don't stop
-            // the service in the middle of handling another job
         }
     }
 
@@ -96,8 +81,6 @@ public class BackgroundService extends Service {
     HandlerThread thread = new HandlerThread("ServiceStartArguments",
                 Process.THREAD_PRIORITY_BACKGROUND);
         thread.start();
-
-
 
         // Get the HandlerThread's Looper and use it for our Handler
         serviceLooper = thread.getLooper();
@@ -133,11 +116,6 @@ public class BackgroundService extends Service {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-//        Message msg = serviceHandler.obtainMessage();
-//        msg.arg1 = startId;
-//        serviceHandler.sendMessage(msg);
-
         if (intent.getAction().equals("start")) {
             getUserChoices();
 
@@ -152,8 +130,6 @@ public class BackgroundService extends Service {
             stopSelf();
         }
         return START_STICKY;
-
-
     }
 
     @Override
@@ -165,7 +141,6 @@ public class BackgroundService extends Service {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void backgroundCheck()
     {
-
         TimerTask backgroundChecker = new TimerTask() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -180,20 +155,16 @@ public class BackgroundService extends Service {
                 {
                     UsageEvents.Event nextEvent = new UsageEvents.Event();
                     events.getNextEvent(nextEvent);
-                    System.out.println("| This one: " + nextEvent.getPackageName() + "| Time: " + nextEvent.getTimeStamp());
-
                     if(userChoices.contains(nextEvent.getPackageName()))
                     {
                         createOverlay();
                         break;
                     }
                 }
-
             }
         };
         backTimer = new Timer();
         backTimer.schedule(backgroundChecker,0, 5000 );
-
     }
 
     public void getUserChoices()
@@ -201,13 +172,6 @@ public class BackgroundService extends Service {
         SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
         Cursor resultSet = mydatabase.rawQuery("Select * from UserChoice WHERE userId=1",null);
         resultSet.moveToFirst();
-//        String snap = resultSet.getString(2);
-//        String face = resultSet.getString(3);
-//        String faceMess = resultSet.getString(4);
-//        String insta = resultSet.getString(5);
-//        String reddit = resultSet.getString(6);
-//        String tik = resultSet.getString(7);
-//        String you = resultSet.getString(8);
         for(int i = 1; i < resultSet.getColumnCount(); i++)
         {
             String userChoice = resultSet.getString(i);
@@ -243,6 +207,7 @@ public class BackgroundService extends Service {
             }
 
         }
+        resultSet.close();
 
     }
 
@@ -252,7 +217,6 @@ public class BackgroundService extends Service {
     public void createOverlay()
     {
         SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
-
         Cursor resultSet2 = mydatabase.rawQuery("Select * from User WHERE userId=1",null);
         resultSet2.moveToFirst();
         String livesAmount = resultSet2.getString(6);
@@ -261,9 +225,9 @@ public class BackgroundService extends Service {
         final int breakTime = failTime * 60000;
         String active = resultSet2.getString(7);
         int activeInt = Integer.parseInt(active);
-        System.out.println("Hi this one : " + activeInt);
         int livesInt = Integer.parseInt(livesAmount);
-
+        resultSet2.close();
+        mydatabase.close();
         if(livesInt > 0 && activeInt == 0)
         {
             Runnable runner = new Runnable() {
@@ -273,8 +237,6 @@ public class BackgroundService extends Service {
                     {
                         mOverlayView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.overlay_display, null);
                         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-//                            WindowManager.LayoutParams.WRAP_CONTENT,
-//                            WindowManager.LayoutParams.WRAP_CONTENT,
                                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                                 PixelFormat.TRANSLUCENT);
@@ -301,10 +263,6 @@ public class BackgroundService extends Service {
                                 Intent puzzleStart = new Intent(getApplicationContext(), DisplayPuzzle.class);
                                 puzzleStart.addFlags(FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(puzzleStart);
-//                                Intent intent = new Intent("puzzleComplete");
-//                                intent.putExtra("key","True");
-//                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                sendBroadcast(intent);
                                 mOverlayView.setVisibility(View.GONE);
                                 puzzleOngoing = true;
                             }
@@ -315,8 +273,6 @@ public class BackgroundService extends Service {
                         mOverlayView.setVisibility(View.VISIBLE);
 
                     }
-
-
                 }
             };
             Handler handler = new Handler(Looper.getMainLooper());
@@ -328,24 +284,17 @@ public class BackgroundService extends Service {
                 public void run() {
                     if (overlayFail != null )
                     {
-                        System.out.println("Is visibile: " + overlayFail.getVisibility());
                         overlayFail.setVisibility(View.VISIBLE);
-                        System.out.println("Hiii");
                     }
                     if(overlayFail == null )
                     {
-                        System.out.print("we in the nu;lllll");
                         overlayFail = LayoutInflater.from(getApplicationContext()).inflate(R.layout.overlayfail, null);
                         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-//                            WindowManager.LayoutParams.WRAP_CONTENT,
-//                            WindowManager.LayoutParams.WRAP_CONTENT,
                                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                                 PixelFormat.TRANSLUCENT);
                         WindowManager mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
                         mWindowManager.addView(overlayFail, params);
-
-
 
                         final Button buttonOkay = overlayFail.findViewById(R.id.okay);
                         buttonOkay.setOnClickListener(new View.OnClickListener() {
@@ -356,26 +305,15 @@ public class BackgroundService extends Service {
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
                                 overlayFail.setVisibility(View.GONE);
-
                             }
                         }
-
                         );
-
-
-//
                     }
-
-
-
                 }
             };
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(runner);
         }
-
-
-
     }
 
     @Override
@@ -393,8 +331,10 @@ public class BackgroundService extends Service {
         int livesAmountInt = Integer.parseInt(livesAmount);
         String failTimeStr = resultSet2.getString(5);
         failTime = Integer.parseInt(failTimeStr);
+        resultSet2.close();
+        mydatabase.close();
         final int breakTime = failTime * 60000;
-        if(livesAmountInt == 0 && lostTimer == false    )
+        if(livesAmountInt == 0 && !lostTimer)
         {
             lostTimer = true;
             new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -423,12 +363,11 @@ public class BackgroundService extends Service {
                             resultSet.moveToFirst();
                             mydatabase.close();
                             lostTimer = false;
-//                                backgroundNotification(("Break Time Over!"));
                             overlayFail.setVisibility(View.GONE);
                             backgroundNotification(("3 Lives Regained"));
                             notificationBuilder.setContentTitle("Blocking Active!");
                             manager.notify(2, notificationBuilder.build());
-
+                            resultSet.close();
                         }
                     }.start();
                 }
@@ -446,12 +385,11 @@ public class BackgroundService extends Service {
         resultSet.moveToFirst();
         String breaker = resultSet.getString(4);
         mydatabase.close();
+        resultSet.close();
         int breakTime = breakTimeInt * 60000;
         if(breaker.equals("1"))
         {
             backTimer.cancel();
-//            backgroundNotification((breakStr + " Minute Break Begun!"));
-//            Toast.makeText(getContext(), (breakStr + " Minute Break Begun!"), Toast.LENGTH_SHORT).show();
             final int finalBreakTime = breakTime;
 
             new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -459,9 +397,7 @@ public class BackgroundService extends Service {
                 public void run() {
                     new CountDownTimer(finalBreakTime, 1000) {
                         int minute = 0;
-                        boolean halfCheck = false;
                         public void onTick(long millisUntilFinished) {
-
                             if (minute == 0) {
                                 notificationBuilder.setContentTitle("Break Time Remaining: " + ((millisUntilFinished / 60000) + 1) + " : 00");
                                 minute = 59;
@@ -473,13 +409,6 @@ public class BackgroundService extends Service {
                                 minute = minute - 1;
                             }
                             manager.notify(2, notificationBuilder.build());
-                            System.out.println("Hiii :" + (millisUntilFinished / 60000) + " | " + (breakTimeInt / 2)  );
-                            if ((millisUntilFinished / 60000) == ((breakTimeInt / 2)-1) && !halfCheck) {
-//                        Toast.makeText(getContext(), "Halfway Through Break!", Toast.LENGTH_SHORT).show();
-                                backgroundNotification(("Halfway Through Break!"));
-                                halfCheck = true;
-                            }
-
                         }
 
                         @RequiresApi(api = Build.VERSION_CODES.O)
@@ -496,17 +425,13 @@ public class BackgroundService extends Service {
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
                             backgroundCheck();
-//                    Toast.makeText(getContext(), "Break Time Over!", Toast.LENGTH_SHORT).show();
-//                            checkUserActivity();
-
+                            resultSet.close();
                         }
                     }.start();
                 }
 
             });
         }
-
-
     }
 
     public void checkUser() {
@@ -516,29 +441,28 @@ public class BackgroundService extends Service {
         {
             Intent newUser = new Intent(this, UserCreation.class);
             startActivity(newUser);
-        } else if (resultSet.getCount() == 1)
-        {
+        } else if (resultSet.getCount() == 1) {
             resultSet.moveToFirst();
             breakStr = resultSet.getString(5);
             breakTimeInt = Integer.parseInt(breakStr);
-            System.out.println("This one " + breakStr);
         }
         mydatabase.close();
+        resultSet.close();
     }
 
     public void backgroundNotification(String message){
-        Intent fullScreenIntent = new Intent(this, DisplayPuzzle.class);
-        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
-                fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_puzzle_notify)
-                        .setContentTitle("Puzzle Time")
+                        .setContentTitle("Puzzle Block")
                         .setContentText(message)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setCategory(NotificationCompat.CATEGORY_ALARM)
-                        .setFullScreenIntent(fullScreenPendingIntent, true)
+                        .setFullScreenIntent(pendingIntent, true)
                         .setAutoCancel(true);
 
         Notification incomingCallNotification = notificationBuilder.build();

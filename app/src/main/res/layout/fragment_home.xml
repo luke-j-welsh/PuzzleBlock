@@ -10,9 +10,11 @@
         android:id="@+id/userTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="152dp"
+        android:layout_marginTop="348dp"
+        android:background="#FFFFFF"
         android:text="TextView"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColorLink="@color/colorPrimaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,11 +24,13 @@
         android:id="@+id/upButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="137dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginLeft="28dp"
+        android:layout_marginTop="336dp"
+        android:background="#A624BC"
         android:clickable="true"
-        android:src="@android:drawable/arrow_up_float"
+        android:src="@android:drawable/ic_input_add"
+        app:backgroundTint="#A624BC"
         app:layout_constraintStart_toEndOf="@+id/userTime"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -34,11 +38,12 @@
         android:id="@+id/downButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="137dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginTop="336dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
         android:clickable="true"
-        android:src="@android:drawable/arrow_down_float"
+        android:src="@android:drawable/button_onoff_indicator_on"
+        app:backgroundTint="#A624BC"
         app:layout_constraintEnd_toStartOf="@+id/userTime"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -46,10 +51,12 @@
         android:id="@+id/startButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="52dp"
         android:clickable="true"
         android:src="@android:drawable/ic_media_play"
+        app:backgroundTint="#A624BC"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userTime" />
 
@@ -62,5 +69,35 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/startButton" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="382dp"
+        android:layout_height="147dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginRight="2dp"
+        android:cropToPadding="true"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_homelogo_foreground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.433"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="95dp"
+        android:layout_marginLeft="95dp"
+        android:layout_marginTop="28dp"
+        android:gravity="center"
+        android:text="Start Detoxing..."
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="30sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

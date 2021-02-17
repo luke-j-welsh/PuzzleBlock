@@ -1,9 +1,8 @@
 package com.example.puzzleblock1;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
 
-import android.content.Intent;
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -25,18 +24,16 @@ public class UserCreation extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_creation);
-
-
     }
 
 
     public void submitUser(View view){
-        EditText editText = (EditText) findViewById(R.id.editBreak);
+        EditText editText = findViewById(R.id.editBreak);
         String message = editText.getText().toString();
         breakTime = Integer.parseInt(message);
-        Switch switch1 = (Switch) findViewById(R.id.switch1);
-        Switch switch2 = (Switch) findViewById(R.id.switch2);
-        Switch switch3 = (Switch) findViewById(R.id.switch3);
+        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch switch1 = findViewById(R.id.switch1);
+        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch switch2 = findViewById(R.id.switch2);
+        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch switch3 = findViewById(R.id.switch3);
 
         if(switch1.isChecked()){
             category1 = 1;
@@ -57,9 +54,10 @@ public class UserCreation extends AppCompatActivity {
         {
             Cursor resultSet2 = mydatabase.rawQuery("UPDATE User SET Category1 = " + category1 + ", Category2 = " + category2 + ", Category3 = " + category3 + ", BreakTime = " + breakTime + " WHERE userId=1", null);
             resultSet2.moveToFirst();
+            resultSet2.close();
         }
         mydatabase.close();
-
+        resultSet.close();
         finish();
 
 
