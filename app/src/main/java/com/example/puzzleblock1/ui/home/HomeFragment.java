@@ -181,7 +181,6 @@ public class HomeFragment extends Fragment {
             resultSet.moveToFirst();
             breakStr = resultSet.getString(5);
             breakTimeInt = Integer.parseInt(breakStr);
-            System.out.println("This one " + breakStr);
         }
         mydatabase.close();
         resultSet.close();
