@@ -15,6 +15,7 @@
     <string name="Category2Body">Puzzles to Improve Your English Skills</string>
     <string name="Category3">Trivia</string>
     <string name="Category3Body">General Knowledge Questions From a Range of Subjects</string>
-    <string name="BreakBody">The Length of Your Break After Completing a Puzzle, Before You Are Blocked Again</string>
+    <string name="BreakBody">The Length of Your Break After Completing a Puzzle.
+        Also The Time Blocked After Failing a Puzzle</string>
     <string name="BreakTitle">Time</string>
 </resources>
