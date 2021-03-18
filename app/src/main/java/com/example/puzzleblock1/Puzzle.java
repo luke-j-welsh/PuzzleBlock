@@ -1,5 +1,8 @@
 package com.example.puzzleblock1;
 
+/**
+ * Puzzle class holds data on a puzzle
+ */
 public class Puzzle {
 
     private int puzzleID;
@@ -12,6 +15,14 @@ public class Puzzle {
 
     private String puzzleAns;
 
+    /**
+     * Puzzle creator method
+     * @param puzzleID the id of the puzzle
+     * @param puzzleName the puzzle name
+     * @param puzzleType the puzzle type
+     * @param puzzleBody the puzzle body
+     * @param puzzleAns the puzzle answer
+     */
     public Puzzle(int puzzleID, String puzzleName, String puzzleType, String puzzleBody, String puzzleAns)
     {
         this.puzzleID = puzzleID;
@@ -20,6 +31,10 @@ public class Puzzle {
         this.puzzleBody = puzzleBody;
         this.puzzleAns = puzzleAns;
     }
+
+    /**
+     * Getter and setters for each of the variables
+     */
 
     public int getPuzzleID() {
         return puzzleID;

@@ -13,6 +13,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * DisplayPuzzle Class is used to display the puzzle to the user
+ */
 public class DisplayPuzzle extends AppCompatActivity {
     public Puzzle userPuzzle;
     public EditText answerInput;
@@ -26,6 +29,10 @@ public class DisplayPuzzle extends AppCompatActivity {
     public int category3;
     public ArrayList<Integer> categoryList = new ArrayList<>();
 
+    /**
+     * onCreate method runs when the DisplayPuzzle class begins, displays the information to the user
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +64,9 @@ public class DisplayPuzzle extends AppCompatActivity {
 
     }
 
+    /**
+     * puzzleCategories method checks the puzzle categories the user has selected in the database
+     */
     public void puzzleCategories()
     {
         SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
@@ -83,6 +93,10 @@ public class DisplayPuzzle extends AppCompatActivity {
         resultSet2.close();
     }
 
+    /**
+     * puzzleActive method checks if a puzzle is showing or not and sets the database to the correct value
+     * @return true if puzzle is active, false if not
+     */
     public boolean puzzleActive()
     {
         SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
@@ -107,6 +121,9 @@ public class DisplayPuzzle extends AppCompatActivity {
 
     }
 
+    /**
+     * getPuzzle method checks the categories the user needs and chooses the puzzle
+     */
     public void getPuzzle(){
         puzzleCategories();
         this.moveTaskToBack(false);
@@ -114,6 +131,9 @@ public class DisplayPuzzle extends AppCompatActivity {
         choosePuzzle();
     }
 
+    /**
+     * choosePuzzle method chooses the puzzle by using the Random function to choose the puzzle from the database and create an instance of the Puzzle class
+     */
     public void choosePuzzle()
     {
         int puzzleId = 0;
@@ -148,7 +168,9 @@ public class DisplayPuzzle extends AppCompatActivity {
     }
 
 
-
+    /**
+     * submitAnswer method runs when the submit button is pressed and checks if the user is right or not
+     */
     @SuppressLint("SetTextI18n")
     public void submitAnswer(View view) {
         String answer = answerInput.getText().toString();
@@ -187,6 +209,9 @@ public class DisplayPuzzle extends AppCompatActivity {
         }
     }
 
+    /**
+     * setBreak method sets the user to be on break after completing a puzzle so the app knows not to block apps for now
+     */
     public void setBreak()
     {
         SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);

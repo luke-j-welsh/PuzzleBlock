@@ -26,13 +26,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+
+/**
+ * MainActivity Class is created on the initialization of the app
+ */
 public class MainActivity extends AppCompatActivity {
-
-
+    //Two variables used for notification purposes
     private static final String CHANNEL_ID = "Puzzle" ;
     private static final int APP_PERMISSION_REQUEST = 1 ;
 
-
+    /**
+     * onCreate class runs on the initialization of the app
+     */
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +64,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+     * isAccessGranted method is used to check if the permissions are granted
+     * @return boolean, true if permissions are granted and false if not
+     */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private boolean isAccessGranted() {
         try {
@@ -79,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * createDatabase function is used to check if the database file already exists within the file and if not, creates it
+     */
     public void createDatabase()
     {
         File dbfile = new File(this.getDatabasePath("PuzzleDatabase.db").getPath());
@@ -109,7 +120,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+     * createNotificationChannel method is used to create the notification channel, this allows notifications to be sent to the device
+     */
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.channel_name);

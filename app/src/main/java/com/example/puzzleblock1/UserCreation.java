@@ -10,6 +10,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Switch;
 
+/**
+ * UserCreation Class is used to create a user and initialise their settings
+ */
 public class UserCreation extends AppCompatActivity {
 
     public int category1 = 0;
@@ -20,13 +23,19 @@ public class UserCreation extends AppCompatActivity {
     public int puzzleActive = 0;
     public int timingActive = 0;
 
+    /**
+     * onCreate method runs when the UserCreation Class is created
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_creation);
     }
 
-
+    /**
+     * submitUser method runs when the user presses the submit button and adds the data to the database
+     */
     public void submitUser(View view){
         EditText editText = findViewById(R.id.editBreak);
         String message = editText.getText().toString();

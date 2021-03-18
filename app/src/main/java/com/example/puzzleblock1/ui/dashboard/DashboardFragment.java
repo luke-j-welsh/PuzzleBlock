@@ -16,11 +16,16 @@ import com.example.puzzleblock1.BlockingChoice;
 import com.example.puzzleblock1.R;
 import com.example.puzzleblock1.UserCreation;
 
-
+/**
+ * DashboardFragment Class runs the settings page
+ */
 public class DashboardFragment extends Fragment {
 
     private DashboardViewModel dashboardViewModel;
 
+    /**
+     * onCreateView method runs when the DashboardFragmentClass is created and reacts to each button press
+     */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         dashboardViewModel =

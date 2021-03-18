@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Switch;
 
+/**
+ * BlockingChoice Class is used to allow users to choose the apps they wish to block
+ */
 public class BlockingChoice extends AppCompatActivity {
 
     public int twit = 0;
@@ -20,12 +23,18 @@ public class BlockingChoice extends AppCompatActivity {
     public int tik = 0;
     public int youtube = 0;
 
+    /**
+     * onCreate method runs when the BlockingChoice Class begins
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blocking_choice);
     }
 
+    /**
+     * submitUser method runs when user presses submit button and adds data to the database
+     */
     public void submitUser(View view){
 
         @SuppressLint("UseSwitchCompatOrMaterialCode")

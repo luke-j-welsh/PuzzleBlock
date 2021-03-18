@@ -36,6 +36,9 @@ import java.util.TimerTask;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 
+/**
+ * BackgroundService Class runs the ForegroundService
+ */
 public class BackgroundService extends Service {
     private Looper serviceLooper;
     private ServiceHandler serviceHandler;
@@ -53,7 +56,10 @@ public class BackgroundService extends Service {
     public boolean lostTimer = false;
     public ArrayList<String> userChoices = new ArrayList<String>();
 
-    // Handler that receives messages from the thread
+
+    /**
+     * ServiceHandler class receives the message from the foreground service and runs the backgroundCheck method
+     */
     private final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper) {
             super(looper);
@@ -65,14 +71,13 @@ public class BackgroundService extends Service {
         }
     }
 
+    /**
+     * onCreate method runs when BackgroundService Class is created and starts the forgreground service and the thread to handle this
+     */
     @SuppressLint("InflateParams")
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate() {
-        // Start up the thread running the service. Note that we create a
-        // separate thread because the service normally runs in the process's
-        // main thread, which we don't want to block. We also make it
-        // background priority so CPU-intensive work doesn't disrupt our UI.
         super.onCreate();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             startMyOwnForeground();
@@ -82,11 +87,13 @@ public class BackgroundService extends Service {
                 Process.THREAD_PRIORITY_BACKGROUND);
         thread.start();
 
-        // Get the HandlerThread's Looper and use it for our Handler
         serviceLooper = thread.getLooper();
         serviceHandler = new ServiceHandler(serviceLooper);
     }
 
+    /**
+     * startMyOwnForeground declares the notification required to start a Foreground Service
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void startMyOwnForeground() {
         String NOTIFICATION_CHANNEL_ID = "com.example.puzzleblock1";
@@ -112,6 +119,13 @@ public class BackgroundService extends Service {
         startForeground(2, notification);
     }
 
+    /**
+     * onStartCommand takes the intent provided from the request to start the service and either sends a message to the handler or stops the service
+     * @param intent the intent that started the service
+     * @param flags the flag attached to the intent
+     * @param startId the ID of the start flag
+     * @return int for startCommand
+     */
     @SuppressLint("InflateParams")
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -124,7 +138,6 @@ public class BackgroundService extends Service {
             serviceHandler.sendMessage(msg);
         }
         else if (intent.getAction().equals("stop")) {
-            //your end servce code
             stopForeground(true);
             backTimer.cancel();
             stopSelf();
@@ -132,12 +145,19 @@ public class BackgroundService extends Service {
         return START_STICKY;
     }
 
+    /**
+     * onBind method is used to bind the service, this is not used for this implementation
+     * @param intent
+     * @return
+     */
     @Override
     public IBinder onBind(Intent intent) {
-        // We don't provide binding, so return null
         return null;
     }
 
+    /**
+     * backgroundCheck method is used to check the user's activity and decide whether to show the blocking screen
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void backgroundCheck()
     {
@@ -167,6 +187,9 @@ public class BackgroundService extends Service {
         backTimer.schedule(backgroundChecker,0, 5000 );
     }
 
+    /**
+     * getUserChoices method runs an SQL query to check what apps the user has blocked and adds them to a linkedlist
+     */
     public void getUserChoices()
     {
         SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
@@ -203,15 +226,14 @@ public class BackgroundService extends Service {
                 {
                     userChoices.add("com.google.android.youtube");
                 }
-
             }
-
         }
         resultSet.close();
-
     }
 
-
+    /**
+     * createOverlay method is used to create the different overlays required for the blocking function to work succesfully
+     */
     @SuppressLint("InflateParams")
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void createOverlay()
@@ -222,7 +244,6 @@ public class BackgroundService extends Service {
         String livesAmount = resultSet2.getString(6);
         String failTimeStr = resultSet2.getString(5);
         failTime = Integer.parseInt(failTimeStr);
-        final int breakTime = failTime * 60000;
         String active = resultSet2.getString(7);
         int activeInt = Integer.parseInt(active);
         int livesInt = Integer.parseInt(livesAmount);
@@ -316,11 +337,10 @@ public class BackgroundService extends Service {
         }
     }
 
-    @Override
-    public void onDestroy() {
-//        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
-    }
 
+    /**
+     * getLost method checks if the user has no lives left and displays the appropriate screen
+     */
     public void getLost()
     {
         SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
@@ -342,7 +362,6 @@ public class BackgroundService extends Service {
                 public void run() {
                     new CountDownTimer(breakTime, 1000) {
                         int minute = 0;
-                        boolean halfCheck = false;
                         public void onTick(long millisUntilFinished) {
 
                             if (minute == 0) {
@@ -373,10 +392,11 @@ public class BackgroundService extends Service {
                 }
             });
         }
-
-
     }
 
+    /**
+     * getBreak method checks if the user is on a break, creating a notification to show to the user
+     */
     public void getBreak()
     {
         checkUser();
@@ -434,6 +454,9 @@ public class BackgroundService extends Service {
         }
     }
 
+    /**
+     * checkUser method checks information in the user table of the database
+     */
     public void checkUser() {
         SQLiteDatabase mydatabase = openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
         Cursor resultSet = mydatabase.rawQuery("Select * from User WHERE userId=1",null);
@@ -450,6 +473,10 @@ public class BackgroundService extends Service {
         resultSet.close();
     }
 
+    /**
+     * backgroundNotification method is used to build the notification
+     * @param message the message the user is shown
+     */
     public void backgroundNotification(String message){
         Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -469,6 +496,5 @@ public class BackgroundService extends Service {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         int notificationId = 1;
         notificationManager.notify(notificationId, incomingCallNotification);
-
     }
 }

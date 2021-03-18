@@ -37,7 +37,9 @@ import java.util.TimerTask;
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 
-
+/**
+ * HomeFragment class displays the home screen and runs the main functions of the app
+ */
 public class HomeFragment extends Fragment {
 
     private static final int APP_PERMISSION_REQUEST = 1 ;
@@ -63,8 +65,9 @@ public class HomeFragment extends Fragment {
     public String breakStr;
 
 
-
-
+    /**
+     * onCreateView method runs when the HomeFragment class begins and initialises the user interface
+     */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
@@ -128,6 +131,9 @@ public class HomeFragment extends Fragment {
         return v;
     }
 
+    /**
+     * checkUserInit method checks if a user exists and whether there is data in the database, if not, some methods are run to initialise the user
+     */
     public void checkUserInit() {
         SQLiteDatabase mydatabase = getActivity().openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
         Cursor resultSet = mydatabase.rawQuery("Select * from User WHERE userId=1",null);
@@ -169,6 +175,9 @@ public class HomeFragment extends Fragment {
         mydatabase.close();
     }
 
+    /**
+     * checkUser method checks a user exists and ensures the break time is correct
+     */
     public void checkUser() {
         SQLiteDatabase mydatabase = getActivity().openOrCreateDatabase("PuzzleDatabase.db",MODE_PRIVATE,null);
         Cursor resultSet = mydatabase.rawQuery("Select * from User WHERE userId=1",null);
@@ -187,7 +196,11 @@ public class HomeFragment extends Fragment {
     }
 
 
-
+    /**
+     * startTimer method begins the timer for a session and starts the foreground service
+     * @param time the length of the session
+     * @param timerDisp the textview that displays the time left
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void startTimer(int time, final TextView timerDisp)
     {
@@ -233,7 +246,9 @@ public class HomeFragment extends Fragment {
         }.start();
     }
 
-
+    /**
+     * displayInfo method runs the getBreak method with a timer to check if the user is on a break or not
+     */
     public void displayInfo()
     {
         TimerTask backgroundChecker = new TimerTask() {
@@ -248,12 +263,21 @@ public class HomeFragment extends Fragment {
     }
 
 
-
+    /**
+     * startService method creates a ForegroundService
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void startService(){
         getActivity().startForegroundService(backgroundCheckService);
     }
 
+    /**
+     * timeChange method changes the time displayed when the user alters their detox session
+     * @param initial the time that was held before changing
+     * @param addition the time being added or taken away from the initial time
+     * @param posNeg whether it is an increase or decrease in time
+     * @return appTimeStr holding the new time in a string
+     */
     public String timeChange(String initial, String addition, int posNeg)
     {
         int newTime;
@@ -271,6 +295,10 @@ public class HomeFragment extends Fragment {
         return appTimeStr;
     }
 
+    /**
+     * backgroundNotification method creates a notification to display to the user
+     * @param message the message to display to the user in the notification
+     */
     public void backgroundNotification(String message){
         Intent notificationIntent = new Intent(getContext(), MainActivity.class);
         notificationIntent.addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -294,7 +322,9 @@ public class HomeFragment extends Fragment {
     }
 
 
-
+    /**
+     * getBreak method checks whether the user is on a break or are blocked and displays this information in the app
+     */
     public void getBreak()
     {
         checkUser();
